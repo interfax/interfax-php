@@ -1,0 +1,27 @@
+{
+    "name": "interfax/interfax",
+    "description": "Send and receive faxes with InterFAX",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "InterFAX",
+            "email": "dev@interfax.net"
+        },
+        {
+            "name": "Mike Smith",
+            "email": "mike.smith@camc-ltd.co.uk"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Interfax\\": "src/Interfax"
+        }
+    }
+}
