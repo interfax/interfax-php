@@ -13,6 +13,12 @@
 
 namespace Interfax;
 
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Psr7\Response;
+
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
 
@@ -62,23 +68,32 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = new Client();
     }
 
-    public function _test_it_can_send_an_outbound_fax()
+    public function test_post_success()
     {
-        $fax = new Outbound\Fax();
+        $mock = new MockHandler([
+            new Response(200)
+        ]);
+        $stack = HandlerStack::create($mock);
 
-        $guzzle = $this->getMockBuilder('GuzzleHttp\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(array('request'))
-            ->getMock();
+        $container = [];
+        $history = Middleware::history($container);
 
-        $client = $this->getClient(['http' => $guzzle]);
+        $stack->push($history);
 
-        $guzzle->expects($this->once())
-            ->method('request')
-            ->will($this->returnValue());
+        $guzzle = new GuzzleClient(['handler' => $stack]);
 
+        $client = $this->getClient();
+        $client->setHttpClient($guzzle);
 
+        $client->post('test/uri',['query' => ['foo' => 'bar']], [['name' => 'doc1', 'headers' => ['X-Bar' => 'FOO'], 'contents' => 'testString']]);
 
+        $this->assertEquals(1, count($container));
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertNotNull($transaction['options']['auth']);
+        $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
+        $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+        $this->assertEquals(1, preg_match('/testString/', $transaction['request']->getBody()));
 
     }
 }

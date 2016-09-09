@@ -13,6 +13,9 @@
 
 namespace Interfax;
 
+use \GuzzleHttp\Client as GuzzleClient;
+use \GuzzleHttp\Psr7\Request;
+
 class Client
 {
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
@@ -20,6 +23,11 @@ class Client
 
     public $username;
     public $password;
+
+    /**
+     * @var GuzzleClient
+     */
+    protected $http;
 
     public function __construct($params = [])
     {
@@ -32,9 +40,46 @@ class Client
         
         $this->username = $username;
         $this->password = $password;
-        if (strlen($this->username) === 0 || strlen($this->password) === 0) {
+        if ($this->username === '' || $this->password === '') {
             throw new \InvalidArgumentException('Username and Password must be provided or defined as environment variables ' . static::$ENV_USERNAME .' & ' . static::$ENV_PASSWORD);
         }
+    }
+
+    /**
+     * Provides for dependency injection of GuzzleHttp Client for testing purposes.
+     *
+     * @param GuzzleClient $client
+     */
+    public function setHttpClient(GuzzleClient $client)
+    {
+        $this->http = $client;
+    }
+
+    /**
+     * @return GuzzleClient
+     */
+    protected function getHttpClient()
+    {
+        if (!$this->http) {
+            $this->http = new GuzzleClient([
+                'base_uri' => 'https://rest.interfax.net/'
+            ]);
+        }
+
+        return $this->http;
+    }
+
+    /**
+     * @param $uri
+     * @param array $params
+     * @param $multipart
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function post($uri, $params = [], $multipart)
+    {
+        $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password, 'digest']]);
+
+        return $this->getHttpClient()->request('POST', $uri, $params);
     }
 
 }

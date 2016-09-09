@@ -10,14 +10,9 @@
  * @license MIT
  */
 
+namespace Interfax;
 
-namespace Interfax\Outbound;
-
-
-class Fax
+class File
 {
-    public function __construct($params = [])
-    {
 
-    }
 }
