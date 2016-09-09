@@ -16,6 +16,16 @@ namespace Interfax;
 class ClientTest extends \PHPUnit_Framework_TestCase
 {
 
+    protected function getClient($properties = array())
+    {
+        $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
+        foreach ($properties as $k => $v) {
+            $client->$k = $v;
+        }
+
+        return $client;
+    }
+
     public function test_constructing_with_variables_overrides_env()
     {
         $current_username = getenv('INTERFAX_USERNAME');
@@ -23,7 +33,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         putenv('INTERFAX_USERNAME=env_username');
         putenv('INTERFAX_PASSWORD=env_password');
 
-        $client = new Client('override_username', 'override_password');
+        $client = new Client(['username' => 'override_username', 'password' => 'override_password']);
         $this->assertEquals('override_username', $client->username);
         $this->assertEquals('override_password', $client->password);
 
@@ -50,5 +60,25 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('InvalidArgumentException');
         $client = new Client();
+    }
+
+    public function _test_it_can_send_an_outbound_fax()
+    {
+        $fax = new Outbound\Fax();
+
+        $guzzle = $this->getMockBuilder('GuzzleHttp\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(array('request'))
+            ->getMock();
+
+        $client = $this->getClient(['http' => $guzzle]);
+
+        $guzzle->expects($this->once())
+            ->method('request')
+            ->will($this->returnValue());
+
+
+
+
     }
 }

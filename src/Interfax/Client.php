@@ -21,15 +21,15 @@ class Client
     public $username;
     public $password;
 
-    public function __construct($username = null, $password = null)
+    public function __construct($params = [])
     {
-        if ($username === null) {
-            $username = getenv(static::$ENV_USERNAME);
-        }
-        if ($password === null) {
-            $password = getenv(static::$ENV_PASSWORD);
+        if ($params === null || !is_array($params)) {
+            throw new \InvalidArgumentException('array of parameters expected to instantiate ' . __CLASS__);
         }
 
+        $username = array_key_exists('username', $params) ? $params['username'] : getenv(static::$ENV_USERNAME);
+        $password = array_key_exists('password', $params) ? $params['password'] : getenv(static::$ENV_PASSWORD);
+        
         $this->username = $username;
         $this->password = $password;
         if (strlen($this->username) === 0 || strlen($this->password) === 0) {
