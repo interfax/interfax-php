@@ -31,14 +31,24 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
 
         $delivery = new Delivery($this->client);
 
-        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345']));
+        $this->setExpectedException('InvalidArgumentException');
+
+        $delivery2 = new Delivery($this->client, ['faxNumber' => '12345']);
+
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => '/fake/file']));
+
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'files' => ['/fake/file']]));
     }
 
     public function test_it_stores_provided_params_for_the_query_string()
     {
-        // TODO: make array keys strings
-        $params = array_fill(0, 5, substr( md5(mt_rand()), 0, 7));
+        $params = [];
+        for ($i = 0; $i < 5; $i++) {
+            $params[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
+        }
         $params['faxNumber'] = '12345';
+        $params['file'] = '/fake/file';
+
 
         $delivery = new Delivery($this->client, $params);
         $qp = $delivery->getQueryParams();

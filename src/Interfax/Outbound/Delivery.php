@@ -16,7 +16,7 @@ namespace Interfax\Outbound;
 
 class Delivery
 {
-    protected static $required_params = ['faxNumber'];
+    protected static $required_qparams = ['faxNumber'];
     protected $query_params = [];
 
     /**
@@ -35,9 +35,14 @@ class Delivery
     {
         $this->client = $client;
 
-        $missing_params = array_diff_key(static::$required_params, $params);
-        if (count($missing_params)) {
-            throw new \InvalidArgumentException('missing required parameters ' . implode(', ', $missing_params));
+        if (!array_key_exists('file', $params) && !array_key_exists('files', $params)) {
+            throw new \InvalidArgumentException('must provide a file or files for Delivery');
+        }
+
+        $missing_qparams = array_diff(static::$required_qparams, array_keys($params));
+
+        if (count($missing_qparams)) {
+            throw new \InvalidArgumentException('missing required query parameters ' . implode(', ', $missing_qparams));
         }
 
         foreach ($params as $k => $v) {
