@@ -69,9 +69,8 @@ class Outbound
 
         $params['query'] = ['ids' => implode(',', $ids)];
 
-        $response = $this->client->get('/outbound/faxes/completed', $params);
-
-        return $this->createFaxes($response);
+        $json = $this->client->get('/outbound/faxes/completed', $params);
+        return $this->createFaxes($json);
     }
 
 }

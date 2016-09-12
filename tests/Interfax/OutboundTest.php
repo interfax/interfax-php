@@ -21,7 +21,7 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['get'])
             ->getMock();
 
-        $response = new \GuzzleHttp\Psr7\Response(200, [], '[{"id": 12},{"id": 14}]');
+        $response = [['id' =>  12],['id' => 14]];
 
         $client->expects($this->once())
             ->method('get')
@@ -38,10 +38,10 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
 
         $outbound->expects($this->once())
             ->method('createFaxes')
-            ->with('[{"id": 12},{"id": 14}]')
+            ->with([['id' =>  12],['id' => 14]])
             ->will($this->returnValue([$fax]));
 
-        $res = $outbound->completed();
+        $res = $outbound->completed(['12', '14']);
 
         $this->assertEquals([$fax], $res);
     }
@@ -57,7 +57,7 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
             ->method('createFax')
             ->will($this->returnValue('foo'));
 
-        $this->assertEquals(3, count($outbound->createFaxes('[{"id": 12},{"id": 14},{"id": 21}]')));
+        $this->assertCount(3, $outbound->createFaxes([['id' => 12],['id' => 14],['id' => 21]]) );
     }
 
     public function test_create_fax()
