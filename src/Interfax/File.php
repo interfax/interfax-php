@@ -43,11 +43,11 @@ class File
     protected function initialiseFromPath($location)
     {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $this->header = 'Content-Type: ' . finfo_file($finfo, $location);
+        $this->header = ['Content-Type' => finfo_file($finfo, $location)];
         if (!$this->name) {
             $this->name = basename($location);
         }
-        $this->body = file_get_contents($location);
+        $this->body = fopen($location, 'r');
     }
 
     /**

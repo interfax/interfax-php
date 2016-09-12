@@ -15,11 +15,13 @@ namespace Interfax;
 
 use \GuzzleHttp\Client as GuzzleClient;
 use \GuzzleHttp\Psr7\Request;
+use Interfax\Outbound\Delivery;
 
 class Client
 {
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
+    protected static $DEFAULT_BASE_URI = 'https://rest.interfax.net/';
 
     public $username;
     public $password;
@@ -62,11 +64,22 @@ class Client
     {
         if (!$this->http) {
             $this->http = new GuzzleClient([
-                'base_uri' => 'https://rest.interfax.net/'
+                'base_uri' => static::$DEFAULT_BASE_URI
             ]);
         }
 
         return $this->http;
+    }
+
+    /**
+     * mockable method to get a Delivery instance.
+     *
+     * @param $params
+     * @return Delivery
+     */
+    public function getDeliveryInstance($params)
+    {
+        return new Delivery($this, $params);
     }
 
     /**
@@ -75,11 +88,20 @@ class Client
      * @param $multipart
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function post($uri, $params = [], $multipart)
+    public function post($uri, $params = [], $multipart = [])
     {
-        $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password, 'digest']]);
+        $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
 
         return $this->getHttpClient()->request('POST', $uri, $params);
+    }
+
+    /**
+     * @param $params
+     */
+    public function deliver($params)
+    {
+        $delivery = $this->getDeliveryInstance($params);
+        return $delivery->send();
     }
 
 }

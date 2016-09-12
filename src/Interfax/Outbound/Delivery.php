@@ -18,6 +18,9 @@ class Delivery
 {
     protected static $required_qparams = ['faxNumber'];
     protected $query_params = [];
+    /**
+     * @var File[]
+     */
     protected $files = [];
     /**
      * @var \Interfax\Client
@@ -94,14 +97,21 @@ class Delivery
      * @TODO: implement
      * @return string
      */
-    public function getMultipartBody()
+    public function getMultipart()
     {
-        return '';
+        $multipart = [];
+        foreach ($this->files as $file) {
+            $multipart[] = [
+                'name' => $file->getName(),
+                'contents' => $file->getBody(),
+                'headers' => $file->getHeader()
+            ];
+        }
+        return $multipart;
     }
 
 
     /**
-     * @param Outbound\Delivery $fax
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function send()
@@ -110,6 +120,6 @@ class Delivery
             'query' => $this->query_params,
         ];
 
-        return $this->client->post('outbound/fax', $params, $this->getMultipartBody());
+        return $this->client->post('outbound/faxes', $params, $this->getMultipart());
     }
 }
