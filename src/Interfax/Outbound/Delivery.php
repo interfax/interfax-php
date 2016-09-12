@@ -13,6 +13,7 @@
 
 namespace Interfax\Outbound;
 use \Interfax\File;
+use Psr\Http\Message\ResponseInterface;
 
 class Delivery
 {
@@ -111,16 +112,18 @@ class Delivery
     }
 
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param $id
      * @return Fax
+     * @throws \InvalidArgumentException
      */
-    public function createFax(\Psr\Http\Message\ResponseInterface $response)
+    public function createFax($id)
     {
-        return new Fax($this->client, $response);
+        return new Fax($this->client, $id);
     }
 
     /**
      * @return Fax
+     * @throws \InvalidArgumentException
      */
     public function send()
     {
@@ -128,6 +131,10 @@ class Delivery
             'query' => $this->query_params,
         ];
 
-         return $this->createFax($this->client->post('outbound/faxes', $params, $this->getMultipart()));
+        $location = $this->client->post('outbound/faxes', $params, $this->getMultipart());
+        // TODO: clean this up
+        $path = parse_url($location, PHP_URL_PATH);
+        $bits = explode('/', $path);
+        return $this->createFax(array_pop($bits));
     }
 }

@@ -15,6 +15,11 @@
 namespace Interfax\Outbound;
 
 use Interfax\Client;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\Psr7\Response;
 
 class DeliveryTest extends \PHPUnit_Framework_TestCase
 {
@@ -62,17 +67,21 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
 
     public function test_it_uses_the_client_to_post_a_delivery_and_returns_fax()
     {
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(array('post'))
-            ->getMock();
+        $mock = new MockHandler([
+            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+        ]);
 
-        $fake_response = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
-            ->getMock();
+        $stack = HandlerStack::create($mock);
 
-        $client->expects($this->once())
-            ->method('post')
-            ->will($this->returnValue($fake_response));
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
+        $client->setHttpClient($guzzle);
 
         $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')
             ->setConstructorArgs([$client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']] ])
@@ -85,7 +94,7 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
 
         $delivery->expects($this->once())
             ->method('createFax')
-            ->with($fake_response)
+            ->with(21)
             ->will($this->returnValue($fax));
 
         $this->assertEquals($fax,$delivery->send());

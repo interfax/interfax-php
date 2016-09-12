@@ -71,7 +71,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function test_post_success()
     {
         $mock = new MockHandler([
-            new Response(200)
+            new Response(201, ['Location' => 'http://myfax.resource.uri'], '')
         ]);
         $stack = HandlerStack::create($mock);
 
@@ -85,8 +85,9 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = $this->getClient();
         $client->setHttpClient($guzzle);
 
-        $client->post('test/uri',['query' => ['foo' => 'bar']], [['name' => 'doc1', 'headers' => ['X-Bar' => 'FOO'], 'contents' => 'testString']]);
+        $response = $client->post('test/uri',['query' => ['foo' => 'bar']], [['name' => 'doc1', 'headers' => ['X-Bar' => 'FOO'], 'contents' => 'testString']]);
 
+        $this->assertEquals('http://myfax.resource.uri', $response);
         $this->assertEquals(1, count($container));
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
@@ -100,7 +101,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
     public function test_get_success()
     {
         $mock = new MockHandler([
-            new Response(200)
+            new Response(200, ['Content-Type' => 'text/json'], '{"id":279415116,"uri":"https://rest.interfax.net/outbound/faxes/279415116","status":0}')
         ]);
         $stack = HandlerStack::create($mock);
 
@@ -114,7 +115,8 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $client = $this->getClient();
         $client->setHttpClient($guzzle);
 
-        $client->get('test/uri',['query' => ['foo' => 'bar']]);
+        $response = $client->get('test/uri',['query' => ['foo' => 'bar']]);
+        $this->assertTrue(is_array($response));
 
         $this->assertEquals(1, count($container));
         $transaction = $container[0];
@@ -122,6 +124,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($transaction['options']['auth']);
         $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+
     }
 
     public function test_deliver_user_delivery_class_to_send_fax()
@@ -148,7 +151,33 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $params = ['foo' => 'bar'];
 
         $this->assertEquals($fake_return, $client->deliver($params));
+    }
 
+    public function test_completed_uses_outbound_class_to_get_results()
+    {
+        $outbound = $this->getMockBuilder('Interfax\Outbound')
+            ->disableOriginalConstructor()
+            ->setMethods(array('completed'))
+            ->getMock();
+
+        $fake_return = 'test';
+        $ids = [1,5, 7];
+
+        $outbound->expects($this->once())
+            ->method('completed')
+            ->with($ids)
+            ->will($this->returnValue($fake_return));
+
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOutboundInstance'])
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('getOutboundInstance')
+            ->will($this->returnValue($outbound));
+
+        $this->assertEquals($fake_return, $client->completed($ids));
     }
 
 }

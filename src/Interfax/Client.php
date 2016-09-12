@@ -16,6 +16,8 @@ namespace Interfax;
 use \GuzzleHttp\Client as GuzzleClient;
 use \GuzzleHttp\Psr7\Request;
 use Interfax\Outbound\Delivery;
+use Interfax\Outbound\Fax;
+use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
@@ -76,10 +78,19 @@ class Client
      *
      * @param $params
      * @return Delivery
+     * @throws \InvalidArgumentException
      */
     public function getDeliveryInstance($params)
     {
         return new Delivery($this, $params);
+    }
+
+    /**
+     * @return Outbound
+     */
+    public function getOutboundInstance()
+    {
+        return new Outbound($this);
     }
 
     /**
@@ -94,7 +105,7 @@ class Client
     {
         $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
 
-        return $this->getHttpClient()->request('POST', $uri, $params);
+        return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $params));
     }
 
     /**
@@ -102,22 +113,60 @@ class Client
      *
      * @param $uri
      * @param array $params
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return string|array
      */
     public function get($uri, $params = [])
     {
         $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
 
-        return $this->getHttpClient()->request('GET', $uri, $params);
+        return $this->parseResponse($this->getHttpClient()->request('GET', $uri, $params));
     }
 
     /**
      * @param $params
+     * @return Fax
+     * @throws \InvalidArgumentException
+     *
      */
     public function deliver($params)
     {
         $delivery = $this->getDeliveryInstance($params);
         return $delivery->send();
+    }
+
+    /**
+     * @param array $ids
+     * @return Fax[]
+     */
+    public function completed($ids = [])
+    {
+        $outbound = $this->getOutboundInstance();
+
+        return $outbound->completed($ids);
+    }
+
+    /**
+     * Parses the responses in a consistent manner for handling by various classes.
+     *
+     * @param ResponseInterface $response
+     * @return mixed|string
+     * @throws \Exception
+     */
+    protected function parseResponse(ResponseInterface $response)
+    {
+        if (in_array($response->getStatusCode(), [200, 201], true)) {
+            if ($location = $response->getHeaderLine('Location')) {
+                return $location;
+            } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
+                return json_decode((string) $response->getBody(), true);
+            } else {
+                return (string) $response->getBody();
+            }
+        }
+        else {
+            // TODO: better exceptions
+            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+        }
     }
 
 }

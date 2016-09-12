@@ -33,40 +33,19 @@ class Fax
      * @param \GuzzleHttp\Psr7\Response $response
      * @throws \InvalidArgumentException
      */
-    public function __construct(Client $client, Response $response)
+    public function __construct(Client $client, $id, $definition = [])
     {
         $this->client = $client;
 
-        if ($response->getStatusCode() != 201) {
-            throw new \InvalidArgumentException('Unexpected response status code ' . $response->getStatusCode() .' for new ' . __CLASS__);
-        }
-        if (!$location = $response->getHeaderLine('Location')) {
-            throw new \InvalidArgumentException('Response did not contain a resource location for new ' . __CLASS__);
-        }
+        $this->resource_uri = '/outbound/faxes/' . $id;
 
-        $this->resource_uri = $location;
-
-        // casting as we don't want to read the body as a stream
-        $this->status = (integer)(string)$response->getBody();
     }
-
-    protected function parseResponse(Response $response)
-    {
-        if ($response->getStatusCode() != 200) {
-            throw new \InvalidArgumentException('Unexpected response status code ' . $response->getStatusCode() .' for new ' . __CLASS__);
-        }
-
-        $this->record = json_decode((string) $response->getBody(), true);
-        $this->status = (integer) $this->record['status'];
-    }
-
 
     protected function updateRecord()
     {
-        $path = parse_url($this->resource_uri)['path'];
-
-        $response = $this->client->get($path);
-        $this->parseResponse($response);
+        $response = $this->client->get($this->resource_uri);
+        $this->record = $response;
+        $this->status = (integer) $this->record['status'];
     }
 
     /**

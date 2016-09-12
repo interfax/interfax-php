@@ -22,13 +22,9 @@ class FaxTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $fake_resource_url = 'https://rest.interfax.net/outbound/faxes/854759652';
-        $response = new \GuzzleHttp\Psr7\Response(201, ['Location' => $fake_resource_url], -2);
-
-        $fax = new Fax($client, $response);
+        $fax = new Fax($client, 854759652);
 
         $this->assertInstanceOf('Interfax\Outbound\Fax', $fax);
-        $this->assertEquals(-2, $fax->getStatus(false));
     }
 
     public function test_can_reload_the_status_of_the_fax()
@@ -38,19 +34,16 @@ class FaxTest extends \PHPUnit_Framework_TestCase
             ->setMethods(array('get'))
             ->getMock();
 
-        $reload_response = new \GuzzleHttp\Psr7\Response(200, [], '{"id":279415116,"uri":"https://rest.interfax.net/outbound/faxes/279415116","status":0}');
+        $reload_response = ['id' => 854759652,'uri' => 'https://rest.interfax.net/outbound/faxes/279415116','status' => 0];
 
         $client->expects($this->once())
             ->method('get')
             ->with('/outbound/faxes/854759652')
             ->will($this->returnValue($reload_response));
 
-        $fake_resource_url = 'https://rest.interfax.net/outbound/faxes/854759652';
-        $response = new \GuzzleHttp\Psr7\Response(201, ['Location' => $fake_resource_url], -2);
+        $fax = new Fax($client, 854759652);
 
-        $fax = new Fax($client, $response);
-
-        $this->assertEquals(-2, $fax->getStatus(false));
+        $this->assertNull($fax->getStatus(false));
         $this->assertEquals(0, $fax->getStatus());
 
     }
