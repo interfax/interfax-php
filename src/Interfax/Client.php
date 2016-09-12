@@ -94,6 +94,30 @@ class Client
     }
 
     /**
+     * Parses the responses in a consistent manner for handling by various classes.
+     *
+     * @param ResponseInterface $response
+     * @return mixed|string
+     * @throws \Exception
+     */
+    protected function parseResponse(ResponseInterface $response)
+    {
+        if (in_array($response->getStatusCode(), [200, 201], true)) {
+            if ($location = $response->getHeaderLine('Location')) {
+                return $location;
+            } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
+                return json_decode((string) $response->getBody(), true);
+            } else {
+                return (string) $response->getBody();
+            }
+        }
+        else {
+            // TODO: better exceptions
+            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+        }
+    }
+
+    /**
      * POST request
      *
      * @param $uri
@@ -146,27 +170,11 @@ class Client
     }
 
     /**
-     * Parses the responses in a consistent manner for handling by various classes.
-     *
-     * @param ResponseInterface $response
-     * @return mixed|string
-     * @throws \Exception
+     * @return string
      */
-    protected function parseResponse(ResponseInterface $response)
+    public function getBalance()
     {
-        if (in_array($response->getStatusCode(), [200, 201], true)) {
-            if ($location = $response->getHeaderLine('Location')) {
-                return $location;
-            } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
-                return json_decode((string) $response->getBody(), true);
-            } else {
-                return (string) $response->getBody();
-            }
-        }
-        else {
-            // TODO: better exceptions
-            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
-        }
+        return $this->get('/accounts/self/ppcards/balance');
     }
 
 }

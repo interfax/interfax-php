@@ -8,7 +8,7 @@ Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/d
 
 ## Installation
 
-The preferred method of installation is via [Packagist][] and [Composer][]. Run the following command to install the package and add it as a requirement to your project's `composer.json`:
+The preferred method of installation is via [Packagist](http://www.packagist.org) and [Composer](http://www.composer.org). Run the following command to install the package and add it as a requirement to your project's `composer.json`:
 
 ```bash
 composer require interfax/interfax
@@ -19,7 +19,6 @@ composer require interfax/interfax
 To send a fax for a pdf file:
 
 ```php
-
 use Interfax\Client;
 
 $interfax = new Client(['username' => 'username', 'password' => 'password']);
@@ -32,4 +31,33 @@ while ($fax->getStatus() < 0) {
 
 // false prevents another request for status
 echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
+```
+
+# Usage
+
+[Client](#client)
+
+## Client
+
+The client follows the [12-factor](http://12factor.net/config) apps principle and can be either set directly or via environment variables.
+
+```php
+$client = new Interfax\Client(['username' => '...', 'password' => '...']);
+
+// Alternative: will utilise environment variables:
+// * INTERFAX_USERNAME
+// * INTERFAX_PASSWORD
+
+$client = new Interfax\Client();
+```
+
+## Account Info
+
+### Balance
+
+Determine the remaining faxing credits in your account.
+
+```php
+echo $client->getBalance();
+// (string) 9.86
 ```

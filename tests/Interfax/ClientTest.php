@@ -180,4 +180,19 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($fake_return, $client->completed($ids));
     }
 
+    public function test_get_balance()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/accounts/self/ppcards/balance')
+            ->will($this->returnValue('4.35'));
+
+        $this->assertEquals('4.35', $client->getBalance());
+    }
+
 }
