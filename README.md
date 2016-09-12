@@ -24,6 +24,12 @@ use Interfax\Client;
 
 $interfax = new Client(['username' => 'username', 'password' => 'password']);
 $fax = $interfax->deliver(['faxNumber' => '+11111111112', 'file' => 'folder/file.pdf']);
-$fax->reload(); // resync with API to get current status
-echo $fax->status();
+
+// getStatus will refresh the status of the fax from the server, if it's less than 0, then the fax is still pending.
+while ($fax->getStatus() < 0) {
+    sleep(5); // wait 5 seconds
+}
+
+// false prevents another request for status
+echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 ```

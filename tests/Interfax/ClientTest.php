@@ -97,6 +97,33 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function test_get_success()
+    {
+        $mock = new MockHandler([
+            new Response(200)
+        ]);
+        $stack = HandlerStack::create($mock);
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = $this->getClient();
+        $client->setHttpClient($guzzle);
+
+        $client->get('test/uri',['query' => ['foo' => 'bar']]);
+
+        $this->assertEquals(1, count($container));
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertNotNull($transaction['options']['auth']);
+        $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
+        $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+    }
+
     public function test_deliver_user_delivery_class_to_send_fax()
     {
         $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')

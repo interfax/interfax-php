@@ -116,7 +116,7 @@ class Delivery
      */
     public function createFax(\Psr\Http\Message\ResponseInterface $response)
     {
-        return new Fax();
+        return new Fax($this->client, $response);
     }
 
     /**

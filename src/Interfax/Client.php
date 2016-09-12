@@ -83,6 +83,8 @@ class Client
     }
 
     /**
+     * POST request
+     *
      * @param $uri
      * @param array $params
      * @param $multipart
@@ -93,6 +95,20 @@ class Client
         $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
 
         return $this->getHttpClient()->request('POST', $uri, $params);
+    }
+
+    /**
+     * GET request.
+     *
+     * @param $uri
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function get($uri, $params = [])
+    {
+        $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
+
+        return $this->getHttpClient()->request('GET', $uri, $params);
     }
 
     /**
