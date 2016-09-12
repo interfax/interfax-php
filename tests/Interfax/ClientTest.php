@@ -96,4 +96,32 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, preg_match('/testString/', $transaction['request']->getBody()));
 
     }
+
+    public function test_deliver_user_delivery_class_to_send_fax()
+    {
+        $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')
+            ->disableOriginalConstructor()
+            ->setMethods(array('send'))
+            ->getMock();
+
+        $fake_return = 'test';
+        $delivery->expects($this->once())
+            ->method('send')
+            ->will($this->returnValue($fake_return));
+
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['getDeliveryInstance'])
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('getDeliveryInstance')
+            ->will($this->returnValue($delivery));
+
+        $params = ['foo' => 'bar'];
+
+        $this->assertEquals($fake_return, $client->deliver($params));
+
+    }
+
 }

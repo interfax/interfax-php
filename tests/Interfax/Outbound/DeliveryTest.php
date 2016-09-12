@@ -60,51 +60,34 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * This will test the send method, need to work out the process of providing files to
-     * the delivery object for sending.
-     */
-    public function test_it_uses_the_client_to_post_a_delivery()
+    public function test_it_uses_the_client_to_post_a_delivery_and_returns_fax()
     {
         $client = $this->getMockBuilder('Interfax\Client')
             ->disableOriginalConstructor()
             ->setMethods(array('post'))
             ->getMock();
 
+        $fake_response = $this->getMockBuilder('GuzzleHttp\Psr7\Response')
+            ->getMock();
+
         $client->expects($this->once())
             ->method('post')
-            ->will($this->returnValue('stub_response'));
+            ->will($this->returnValue($fake_response));
 
-        $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']]);
-
-        $delivery->send();
-    }
-
-    public function test_deliver_user_deliver_class_to_send_fax()
-    {
         $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')
-            ->disableOriginalConstructor()
-            ->setMethods(array('send'))
+            ->setConstructorArgs([$client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']] ])
+            ->setMethods(['createFax'])
             ->getMock();
 
-        $fake_return = 'test';
+        $fax = $this->getMockBuilder('Interfax\Outbound\Fax')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $delivery->expects($this->once())
-            ->method('send')
-            ->will($this->returnValue($fake_return));
+            ->method('createFax')
+            ->with($fake_response)
+            ->will($this->returnValue($fax));
 
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['getDeliveryInstance'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('getDeliveryInstance')
-            ->will($this->returnValue($delivery));
-
-        $params = ['foo' => 'bar'];
-
-        $this->assertEquals($fake_return, $client->deliver($params));
-
+        $this->assertEquals($fax,$delivery->send());
     }
-
 }

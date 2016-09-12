@@ -110,9 +110,17 @@ class Delivery
         return $multipart;
     }
 
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @return Fax
+     */
+    public function createFax(\Psr\Http\Message\ResponseInterface $response)
+    {
+        return new Fax();
+    }
 
     /**
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return Fax
      */
     public function send()
     {
@@ -120,6 +128,6 @@ class Delivery
             'query' => $this->query_params,
         ];
 
-        return $this->client->post('outbound/faxes', $params, $this->getMultipart());
+         return $this->createFax($this->client->post('outbound/faxes', $params, $this->getMultipart()));
     }
 }

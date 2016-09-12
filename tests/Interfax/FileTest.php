@@ -32,7 +32,9 @@ class FileTest extends \PHPUnit_Framework_TestCase
     public function test_it_sets_values_from_valid_file()
     {
         $file = new File(__DIR__ . '/test.pdf');
-        $this->assertEquals('Content-Type: application/pdf', $file->getHeader());
+        $header = $file->getHeader();
+        $this->assertArrayHasKey('Content-Type', $header);
+        $this->assertEquals('application/pdf', $header['Content-Type']);
         $this->assertEquals('test.pdf', $file->getName());
     }
 
