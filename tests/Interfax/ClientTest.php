@@ -195,4 +195,31 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('4.35', $client->getBalance());
     }
 
+    public function test_recent_uses_outbound_class_to_get_results()
+    {
+        $outbound = $this->getMockBuilder('Interfax\Outbound')
+            ->disableOriginalConstructor()
+            ->setMethods(array('recent'))
+            ->getMock();
+
+        $fake_return = 'test';
+        $params = ['sortOrder' => 'asc', 'limit' => 5];
+
+        $outbound->expects($this->once())
+            ->method('recent')
+            ->with($params)
+            ->will($this->returnValue($fake_return));
+
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOutboundInstance'])
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('getOutboundInstance')
+            ->will($this->returnValue($outbound));
+
+        $this->assertEquals($fake_return, $client->recent($params));
+    }
+
 }

@@ -55,7 +55,7 @@ class File
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $this->setMimeType(finfo_file($finfo, $location));
         }
-        
+
         if (!$this->name) {
             $this->name = basename($location);
         }

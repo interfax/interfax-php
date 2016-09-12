@@ -177,4 +177,15 @@ class Client
         return $this->get('/accounts/self/ppcards/balance');
     }
 
+    /**
+     * @param array $params
+     * @return Outbound\Fax[]
+     */
+    public function recent($params = [])
+    {
+        $outbound = $this->getOutboundInstance();
+
+        return $outbound->recent($params);
+    }
+
 }

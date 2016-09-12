@@ -67,4 +67,36 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Interfax\Outbound\Fax', $outbound->createFax(['id' => 12]));
     }
+
+    public function test_recent()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $response = [['id' =>  21],['id' => 14]];
+
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/outbound/faxes', ['limit' => 5])
+            ->will($this->returnValue($response));
+
+
+        $outbound = $this->getMockBuilder('Interfax\Outbound')
+            ->setConstructorArgs([$client])
+            ->setMethods(['createFaxes'])
+            ->getMock();
+
+        $fax = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
+
+        $outbound->expects($this->once())
+            ->method('createFaxes')
+            ->with([['id' =>  21],['id' => 14]])
+            ->will($this->returnValue([$fax]));
+
+        $res = $outbound->recent(['limit' => 5]);
+
+        $this->assertEquals([$fax], $res);
+    }
 }

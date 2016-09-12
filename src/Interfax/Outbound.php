@@ -73,4 +73,13 @@ class Outbound
         return $this->createFaxes($json);
     }
 
+    /**
+     * @param $params
+     * @return Outbound\Fax[]
+     */
+    public function recent($params)
+    {
+        return $this->createFaxes($this->client->get('/outbound/faxes', $params));
+    }
+
 }
