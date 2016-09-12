@@ -38,4 +38,15 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('test.pdf', $file->getName());
     }
 
+    public function test_attribute_overrides()
+    {
+        // although this would not be useful, the principle here is to allow both attributes to be set by
+        // the method call to ensure erroneous details can be altered correctly
+        $file = new File(__DIR__ . '/test.pdf', ['mime_type' => 'text/html', 'name' => 'foobar.html']);
+        $header = $file->getHeader();
+        $this->assertArrayHasKey('Content-Type', $header);
+        $this->assertEquals('text/html', $header['Content-Type']);
+        $this->assertEquals('foobar.html', $file->getName());
+    }
+
 }

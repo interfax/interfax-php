@@ -14,7 +14,7 @@ namespace Interfax;
 
 class File
 {
-    protected $header;
+    protected $mime_type;
     protected $name;
     protected $body;
 
@@ -30,6 +30,10 @@ class File
             throw new \InvalidArgumentException($location . ' not found. File must exists on filesystem to construct ' . __CLASS__);
         }
 
+        if (array_key_exists('mime_type', $params)) {
+            $this->setMimeType($params['mime_type']);
+        }
+
         if (array_key_exists('name', $params)) {
             $this->name = $params['name'];
         }
@@ -37,13 +41,21 @@ class File
         $this->initialiseFromPath($location);
     }
 
+    public function setMimeType($mime_type)
+    {
+        $this->mime_type = $mime_type;
+    }
+
     /**
      * @param $location
      */
     protected function initialiseFromPath($location)
     {
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $this->header = ['Content-Type' => finfo_file($finfo, $location)];
+        if (!$this->mime_type) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $this->setMimeType(finfo_file($finfo, $location));
+        }
+        
         if (!$this->name) {
             $this->name = basename($location);
         }
@@ -55,7 +67,7 @@ class File
      */
     public function getHeader()
     {
-        return $this->header;
+        return ['Content-Type' => $this->mime_type];
     }
 
     /**
