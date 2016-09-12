@@ -47,11 +47,12 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
             $params[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
         }
         $params['faxNumber'] = '12345';
-        $params['file'] = '/fake/file';
-
+        $params['file'] = __DIR__ . '/../test.pdf';
 
         $delivery = new Delivery($this->client, $params);
         $qp = $delivery->getQueryParams();
+        // file is not a query param
+        unset($params['file']);
         $this->assertEquals(count($params), count($qp));
         foreach ($params as $k => $v) {
             $this->assertArrayHasKey($k, $qp);
@@ -63,7 +64,7 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
      * This will test the send method, need to work out the process of providing files to
      * the delivery object for sending.
      */
-    public function _test_it_uses_the_client_to_post_a_delivery()
+    public function test_it_uses_the_client_to_post_a_delivery()
     {
         $client = $this->getMockBuilder('Interfax\Client')
             ->disableOriginalConstructor()
@@ -74,11 +75,11 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
             ->method('post')
             ->will($this->returnValue('stub_response'));
 
-        $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo']);
+        $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']]);
 
         $delivery->send();
-
     }
+
 
 
 }
