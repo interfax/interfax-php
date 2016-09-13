@@ -45,6 +45,35 @@ class FaxTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNull($fax->getStatus(false));
         $this->assertEquals(0, $fax->getStatus());
+    }
 
+    public function test_getter_method_for_record_details()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(array('get'))
+            ->getMock();
+
+        $response = [];
+        for ($i = 0; $i < 5; $i++) {
+            $response[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
+        }
+        $response['id'] = 82342453;
+        $response['status'] = -2;
+
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/outbound/faxes/82342453')
+            ->will($this->returnValue($response));
+
+        $fax = new Fax($client, 82342453);
+        $this->assertEquals(-2, $fax->getStatus());
+
+        foreach ($response as $k => $v) {
+            $this->assertEquals($v, $fax->$k);
+        }
+
+        $this->setExpectedException('OutOfBoundsException');
+        $missing = $fax->undefined_property;
     }
 }

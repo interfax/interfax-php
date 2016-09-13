@@ -76,3 +76,21 @@ $outbound = $client->outbound;
 $faxes = $client->outbound->recent();
 // Interfax\Outbound\Fax[]
 ```
+
+### Get completed outbound fax list
+
+```php
+$fax_ids = [ ... ]; // array of fax ids
+$client->outbound->completed($fax_ids);
+// Interfax\Outbound\Fax[]
+```
+
+## Outbound Fax
+
+The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
+
+TODO: document methods
+
+Properties on the Fax are defined by what method call has been used to create the instance. Requesting a property that has not been received will raise a SPL ```\OutOfBoundsException```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2921)
