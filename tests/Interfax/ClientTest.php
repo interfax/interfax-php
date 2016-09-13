@@ -141,43 +141,16 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $client = $this->getMockBuilder('Interfax\Client')
             ->disableOriginalConstructor()
-            ->setMethods(['getDeliveryInstance'])
+            ->setMethods(['getDelivery'])
             ->getMock();
 
         $client->expects($this->once())
-            ->method('getDeliveryInstance')
+            ->method('getDelivery')
             ->will($this->returnValue($delivery));
 
         $params = ['foo' => 'bar'];
 
         $this->assertEquals($fake_return, $client->deliver($params));
-    }
-
-    public function test_completed_uses_outbound_class_to_get_results()
-    {
-        $outbound = $this->getMockBuilder('Interfax\Outbound')
-            ->disableOriginalConstructor()
-            ->setMethods(array('completed'))
-            ->getMock();
-
-        $fake_return = 'test';
-        $ids = [1,5, 7];
-
-        $outbound->expects($this->once())
-            ->method('completed')
-            ->with($ids)
-            ->will($this->returnValue($fake_return));
-
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOutboundInstance'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('getOutboundInstance')
-            ->will($this->returnValue($outbound));
-
-        $this->assertEquals($fake_return, $client->completed($ids));
     }
 
     public function test_get_balance()
@@ -195,31 +168,23 @@ class ClientTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('4.35', $client->getBalance());
     }
 
-    public function test_recent_uses_outbound_class_to_get_results()
+    public function test_outbound_property_returns_outbound_instance()
     {
         $outbound = $this->getMockBuilder('Interfax\Outbound')
             ->disableOriginalConstructor()
-            ->setMethods(array('recent'))
             ->getMock();
 
-        $fake_return = 'test';
-        $params = ['sortOrder' => 'asc', 'limit' => 5];
-
-        $outbound->expects($this->once())
-            ->method('recent')
-            ->with($params)
-            ->will($this->returnValue($fake_return));
+        $client = $this->getClient();
 
         $client = $this->getMockBuilder('Interfax\Client')
             ->disableOriginalConstructor()
-            ->setMethods(['getOutboundInstance'])
+            ->setMethods(['getOutbound'])
             ->getMock();
 
         $client->expects($this->once())
-            ->method('getOutboundInstance')
+            ->method('getOutbound')
             ->will($this->returnValue($outbound));
 
-        $this->assertEquals($fake_return, $client->recent($params));
+        $this->assertEquals($outbound, $client->outbound);
     }
-
 }

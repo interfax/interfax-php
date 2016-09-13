@@ -73,6 +73,21 @@ class Client
         return $this->http;
     }
 
+    private $accessible = ['outbound', 'inbound'];
+
+    /**
+     * Simplifies the route to accessing specific 'route' classes for the client
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        if (in_array($name, $this->accessible)) {
+            return $this->{'get' . ucfirst($name)}();
+        }
+    }
+
     /**
      * mockable method to get a Delivery instance.
      *
@@ -80,15 +95,17 @@ class Client
      * @return Delivery
      * @throws \InvalidArgumentException
      */
-    public function getDeliveryInstance($params)
+    public function getDelivery($params)
     {
         return new Delivery($this, $params);
     }
 
     /**
+     * Mockable method to get Outbound instance.
+     *
      * @return Outbound
      */
-    public function getOutboundInstance()
+    public function getOutbound()
     {
         return new Outbound($this);
     }
@@ -154,19 +171,8 @@ class Client
      */
     public function deliver($params)
     {
-        $delivery = $this->getDeliveryInstance($params);
+        $delivery = $this->getDelivery($params);
         return $delivery->send();
-    }
-
-    /**
-     * @param array $ids
-     * @return Fax[]
-     */
-    public function completed($ids = [])
-    {
-        $outbound = $this->getOutboundInstance();
-
-        return $outbound->completed($ids);
     }
 
     /**
@@ -176,16 +182,4 @@ class Client
     {
         return $this->get('/accounts/self/ppcards/balance');
     }
-
-    /**
-     * @param array $params
-     * @return Outbound\Fax[]
-     */
-    public function recent($params = [])
-    {
-        $outbound = $this->getOutboundInstance();
-
-        return $outbound->recent($params);
-    }
-
 }

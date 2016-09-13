@@ -61,3 +61,18 @@ Determine the remaining faxing credits in your account.
 echo $client->getBalance();
 // (string) 9.86
 ```
+
+## Outbound
+
+```Interfax\Client``` has an outbound property that should be accessed:
+
+```php
+$outbound = $client->outbound;
+```
+
+### Get recent outbound fax list
+
+```php
+$faxes = $client->outbound->recent();
+// Interfax\Outbound\Fax[]
+```
