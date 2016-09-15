@@ -15,6 +15,7 @@ namespace Interfax;
 
 use \GuzzleHttp\Client as GuzzleClient;
 use \GuzzleHttp\Psr7\Request;
+use Interfax\Exception\RequestException;
 use Interfax\Outbound\Delivery;
 use Interfax\Outbound\Fax;
 use Psr\Http\Message\ResponseInterface;
@@ -133,13 +134,19 @@ class Client
      * @param $uri
      * @param array $params
      * @param $multipart
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return string|array
+     * @throws RequestException
      */
     public function post($uri, $params = [], $multipart = [])
     {
         $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
+        try {
+            return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params)));
+        }
+        catch (\GuzzleHttp\Exception\RequestException $e) {
+            throw RequestException::create("Problem with POST request", $e);
+        }
 
-        return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params)));
     }
 
     /**
@@ -148,12 +155,20 @@ class Client
      * @param $uri
      * @param array $params
      * @return string|array
+     * @throws RequestException
      */
     public function get($uri, $params = [])
     {
         $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
 
-        return $this->parseResponse($this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params)));
+        try {
+            $response = $this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params));
+            return $this->parseResponse($response);
+        }
+        catch (\GuzzleHttp\Exception\RequestException $e) {
+            throw RequestException::create("Problem with GET request", $e);
+        }
+
     }
 
     /**
@@ -161,7 +176,7 @@ class Client
      *
      * @param ResponseInterface $response
      * @return mixed|string|array
-     * @throws \Exception
+     * @throws RequestException
      */
     protected function parseResponse(ResponseInterface $response)
     {
@@ -176,7 +191,8 @@ class Client
         }
         else {
             // TODO: better exceptions
-            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+            //throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+            throw new RequestException("Unexpected response code", RequestException::$UNEXPECTED_RESPONSE_CODE, $response->getStatusCode());
         }
     }
 

@@ -42,4 +42,29 @@ class InboundTest extends BaseTest
 
         $this->assertCount(2, $faxes);
     }
+
+    public function test_find()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(['get'])
+            ->getMock();
+
+        $response = ['messageId' =>  12, 'phoneNumber' => '111'];
+
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/inbound/faxes/12')
+            ->will($this->returnValue($response));
+
+        $fax = new Inbound\Fax($client, 12);
+        $factory = $this->getFactory(
+            [
+                [$fax, [$client, 12, $response]],
+            ]);
+
+        $inbound = new Inbound($client, $factory);
+
+        $this->assertEquals($fax, $inbound->find(12));
+    }
 }

@@ -12,6 +12,8 @@
  */
 namespace Interfax;
 
+use Interfax\Exception\RequestException;
+
 class Inbound
 {
     /**
@@ -58,5 +60,19 @@ class Inbound
 
         //TODO: make this better
         throw new \Exception('unexpected result');
+    }
+
+    /**
+     * @param $id
+     * @return Interfax\Inbound\Fax|void
+     * @throws RequestException
+     */
+    public function find($id)
+    {
+        $json = $this->client->get('/inbound/faxes/' . $id);
+
+        if (is_array($json)) {
+            return $this->factory->instantiateClass('Interfax\Inbound\Fax', [$this->client, $id, $json]);
+        }
     }
 }
