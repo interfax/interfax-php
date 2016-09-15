@@ -19,10 +19,10 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 
-class ClientTest extends \PHPUnit_Framework_TestCase
+class ClientTest extends BaseTest
 {
 
-    protected function getClient($properties = array())
+    protected function getClient($properties = [])
     {
         $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
         foreach ($properties as $k => $v) {
@@ -82,8 +82,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $guzzle = new GuzzleClient(['handler' => $stack]);
 
-        $client = $this->getClient();
-        $client->setHttpClient($guzzle);
+        $client = $this->getClientWithFactory([$guzzle]);
 
         $response = $client->post('test/uri',['query' => ['foo' => 'bar']], [['name' => 'doc1', 'headers' => ['X-Bar' => 'FOO'], 'contents' => 'testString']]);
 
@@ -112,8 +111,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
 
         $guzzle = new GuzzleClient(['handler' => $stack]);
 
-        $client = $this->getClient();
-        $client->setHttpClient($guzzle);
+        $client = $this->getClientWithFactory([$guzzle]);
 
         $response = $client->get('test/uri',['query' => ['foo' => 'bar']]);
         $this->assertTrue(is_array($response));
@@ -139,14 +137,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->method('send')
             ->will($this->returnValue($fake_return));
 
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['getDelivery'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('getDelivery')
-            ->will($this->returnValue($delivery));
+        $client = $this->getClientWithFactory([$delivery]);
 
         $params = ['foo' => 'bar'];
 
@@ -174,16 +165,7 @@ class ClientTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $client = $this->getClient();
-
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOutbound'])
-            ->getMock();
-
-        $client->expects($this->once())
-            ->method('getOutbound')
-            ->will($this->returnValue($outbound));
+        $client = $this->getClientWithFactory([$outbound]);
 
         $this->assertEquals($outbound, $client->outbound);
     }

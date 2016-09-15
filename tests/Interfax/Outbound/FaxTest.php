@@ -76,4 +76,8 @@ class FaxTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException('OutOfBoundsException');
         $missing = $fax->undefined_property;
     }
+
+    public function test_resend_uses_client_outbound()
+    {}
+
 }

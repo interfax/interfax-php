@@ -21,6 +21,16 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
+    /**
+     * @var GenericFactory
+     */
+    private $factory;
+
+    /**
+     * @var Outbound
+     */
+    private $outbound;
+
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
     protected static $DEFAULT_BASE_URI = 'https://rest.interfax.net/';
@@ -33,7 +43,12 @@ class Client
      */
     protected $http;
 
-    public function __construct($params = [])
+    /**
+     * Client constructor.
+     * @param array $params
+     * @param GenericFactory|null $factory - allows for testing injection with abstract class instantiation
+     */
+    public function __construct($params = [], GenericFactory $factory = null)
     {
         if ($params === null || !is_array($params)) {
             throw new \InvalidArgumentException('array of parameters expected to instantiate ' . __CLASS__);
@@ -47,33 +62,19 @@ class Client
         if ($this->username === '' || $this->password === '') {
             throw new \InvalidArgumentException('Username and Password must be provided or defined as environment variables ' . static::$ENV_USERNAME .' & ' . static::$ENV_PASSWORD);
         }
-    }
 
-    /**
-     * Provides for dependency injection of GuzzleHttp Client for testing purposes.
-     *
-     * @param GuzzleClient $client
-     */
-    public function setHttpClient(GuzzleClient $client)
-    {
-        $this->http = $client;
-    }
-
-    /**
-     * @return GuzzleClient
-     */
-    protected function getHttpClient()
-    {
-        if (!$this->http) {
-            $this->http = new GuzzleClient([
-                'base_uri' => static::$DEFAULT_BASE_URI
-            ]);
+        // if its not injected, we instantiate directly
+        if ($factory === null) {
+            $factory = new GenericFactory();
         }
 
-        return $this->http;
+        $this->factory = $factory;
     }
 
-    private $accessible = ['outbound', 'inbound'];
+    private $cached_accessible = [
+        'outbound' => 'Interfax\Outbound',
+        'inbound' => 'Interfax\Inbound'
+    ];
 
     /**
      * Simplifies the route to accessing specific 'route' classes for the client
@@ -83,55 +84,27 @@ class Client
      */
     public function __get($name)
     {
-        if (in_array($name, $this->accessible)) {
-            return $this->{'get' . ucfirst($name)}();
-        }
-    }
-
-    /**
-     * mockable method to get a Delivery instance.
-     *
-     * @param $params
-     * @return Delivery
-     * @throws \InvalidArgumentException
-     */
-    public function getDelivery($params)
-    {
-        return new Delivery($this, $params);
-    }
-
-    /**
-     * Mockable method to get Outbound instance.
-     *
-     * @return Outbound
-     */
-    public function getOutbound()
-    {
-        return new Outbound($this);
-    }
-
-    /**
-     * Parses the responses in a consistent manner for handling by various classes.
-     *
-     * @param ResponseInterface $response
-     * @return mixed|string
-     * @throws \Exception
-     */
-    protected function parseResponse(ResponseInterface $response)
-    {
-        if (in_array($response->getStatusCode(), [200, 201], true)) {
-            if ($location = $response->getHeaderLine('Location')) {
-                return $location;
-            } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
-                return json_decode((string) $response->getBody(), true);
-            } else {
-                return (string) $response->getBody();
+        if (in_array($name, array_keys($this->cached_accessible))) {
+            if (!$this->$name) {
+                $this->$name = $this->factory->instantiateClass($this->cached_accessible[$name], [$this]);
             }
+            return $this->$name;
         }
-        else {
-            // TODO: better exceptions
-            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+    }
+
+    /**
+     * @return GuzzleClient
+     */
+    protected function getHttpClient()
+    {
+        if (!$this->http) {
+            $this->http = $this->factory->instantiateClass(
+                'GuzzleHttp\Client',
+                ['base_uri' => static::$DEFAULT_BASE_URI]
+            );
         }
+
+        return $this->http;
     }
 
     /**
@@ -164,6 +137,30 @@ class Client
     }
 
     /**
+     * Parses the responses in a consistent manner for handling by various classes.
+     *
+     * @param ResponseInterface $response
+     * @return mixed|string
+     * @throws \Exception
+     */
+    protected function parseResponse(ResponseInterface $response)
+    {
+        if (in_array($response->getStatusCode(), [200, 201], true)) {
+            if ($location = $response->getHeaderLine('Location')) {
+                return $location;
+            } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
+                return json_decode((string) $response->getBody(), true);
+            } else {
+                return (string) $response->getBody();
+            }
+        }
+        else {
+            // TODO: better exceptions
+            throw new \Exception("Unexpected response code: " . $response->getStatusCode());
+        }
+    }
+
+    /**
      * @param $params
      * @return Fax
      * @throws \InvalidArgumentException
@@ -171,7 +168,7 @@ class Client
      */
     public function deliver($params)
     {
-        $delivery = $this->getDelivery($params);
+        $delivery = $this->factory->instantiateClass('Interfax\Outbound\Delivery', [$this, $params]);
         return $delivery->send();
     }
 

@@ -14,6 +14,7 @@
 
 namespace Interfax\Outbound;
 
+use Interfax\BaseTest;
 use Interfax\Client;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
@@ -21,7 +22,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 
-class DeliveryTest extends \PHPUnit_Framework_TestCase
+class DeliveryTest extends BaseTest
 {
     protected $client;
 
@@ -80,8 +81,7 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
 
         $guzzle = new GuzzleClient(['handler' => $stack]);
 
-        $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
-        $client->setHttpClient($guzzle);
+        $client = $this->getClientWithFactory([$guzzle]);
 
         $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')
             ->setConstructorArgs([$client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']] ])
@@ -97,6 +97,6 @@ class DeliveryTest extends \PHPUnit_Framework_TestCase
             ->with(21)
             ->will($this->returnValue($fax));
 
-        $this->assertEquals($fax,$delivery->send());
+        $this->assertEquals($fax, $delivery->send());
     }
 }
