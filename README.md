@@ -8,6 +8,8 @@ Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/d
 
 ## Installation
 
+_TODO:_ submit to packagist
+
 The preferred method of installation is via [Packagist](http://www.packagist.org) and [Composer](http://www.composer.org). Run the following command to install the package and add it as a requirement to your project's `composer.json`:
 
 ```bash
