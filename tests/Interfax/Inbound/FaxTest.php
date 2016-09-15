@@ -25,7 +25,7 @@ class FaxTest extends BaseTest
 
         $client->expects($this->once())
             ->method('post')
-            ->with('/inbound/faxes/854759652', ['unread' => false])
+            ->with('/inbound/faxes/854759652', ['query' => ['unread' => false]])
             ->will($this->returnValue(''));
 
         $fax = new Fax($client, 854759652);
@@ -42,11 +42,45 @@ class FaxTest extends BaseTest
 
         $client->expects($this->once())
             ->method('post')
-            ->with('/inbound/faxes/854759652', ['unread' => true])
+            ->with('/inbound/faxes/854759652', ['query' => ['unread' => true]])
             ->will($this->returnValue(''));
 
         $fax = new Fax($client, 854759652);
 
         $this->assertTrue($fax->markUnread());
+    }
+
+    public function test_resend()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(array('post'))
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('post')
+            ->with('/inbound/faxes/854759652/resend')
+            ->will($this->returnValue(''));
+
+        $fax = new Fax($client, 854759652);
+
+        $this->assertTrue($fax->resend());
+    }
+
+    public function test_resend_with_email()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(array('post'))
+            ->getMock();
+
+        $client->expects($this->once())
+            ->method('post')
+            ->with('/inbound/faxes/854759652/resend', ['query' => ['email' => 'foo@bar.com']])
+            ->will($this->returnValue(''));
+
+        $fax = new Fax($client, 854759652);
+
+        $this->assertTrue($fax->resend('foo@bar.com'));
     }
 }

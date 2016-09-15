@@ -13,6 +13,7 @@
 namespace Interfax\Inbound;
 
 use Interfax\Client;
+use Interfax\Exception\RequestException;
 
 class Fax
 {
@@ -36,11 +37,11 @@ class Fax
     /**
      * @param bool $unread
      * @return bool
-     * @throws \Exception
+     * @throws RequestException
      */
     protected function mark($unread = true)
     {
-        $this->client->post($this->resource_uri, ['unread' => $unread]);
+        $this->client->post($this->resource_uri, ['query' => ['unread' => $unread]]);
 
         // lack of exception indicates success
         return true;
@@ -48,7 +49,7 @@ class Fax
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws RequestException
      */
     public function markRead()
     {
@@ -57,11 +58,27 @@ class Fax
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws RequestException
      */
     public function markUnread()
     {
         return $this->mark(true);
+    }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    public function resend($email = null)
+    {
+        $params = [];
+        if ($email !== null) {
+            $params['query'] = ['email' => $email];
+        }
+        $this->client->post($this->resource_uri . '/resend', $params);
+
+        // lack of exception indicates success
+        return true;
     }
 
 }
