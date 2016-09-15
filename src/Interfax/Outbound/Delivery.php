@@ -13,6 +13,7 @@
 
 namespace Interfax\Outbound;
 use \Interfax\File;
+use Interfax\GenericFactory;
 use Psr\Http\Message\ResponseInterface;
 
 class Delivery
@@ -35,7 +36,7 @@ class Delivery
      * @param array $params
      * @throws \InvalidArgumentException
      */
-    public function __construct(\Interfax\Client $client, $params = [])
+    public function __construct(\Interfax\Client $client, $params = [], GenericFactory $factory = null)
     {
         $this->client = $client;
 
@@ -44,6 +45,12 @@ class Delivery
         if (count($missing_qparams)) {
             throw new \InvalidArgumentException('missing required query parameters ' . implode(', ', $missing_qparams));
         }
+
+        if ($factory === null) {
+            $factory = new GenericFactory();
+        }
+
+        $this->factory = $factory;
 
         $this->resolveFiles($params);
 
@@ -77,25 +84,16 @@ class Delivery
         foreach ($files as $f) {
             if (is_array($f)) {
                 if (count($f) == 2) {
-                    $this->files[] = new File($f[0], $f[1]);
+                    $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f[0], $f[1]]);
                 }
             }
             else {
-                $this->files[] = new File($f);
+                $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f]);
             }
         }
     }
 
     /**
-     * @return array
-     */
-    public function getQueryParams()
-    {
-        return $this->query_params;
-    }
-
-    /**
-     * @TODO: implement
      * @return string
      */
     public function getMultipart()
@@ -112,16 +110,6 @@ class Delivery
     }
 
     /**
-     * @param $id
-     * @return Fax
-     * @throws \InvalidArgumentException
-     */
-    public function createFax($id)
-    {
-        return new Fax($this->client, $id);
-    }
-
-    /**
      * @return Fax
      * @throws \InvalidArgumentException
      */
@@ -135,6 +123,6 @@ class Delivery
         // TODO: clean this up
         $path = parse_url($location, PHP_URL_PATH);
         $bits = explode('/', $path);
-        return $this->createFax(array_pop($bits));
+        return $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, array_pop($bits)]);
     }
 }

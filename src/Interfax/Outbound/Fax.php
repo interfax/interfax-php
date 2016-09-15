@@ -18,6 +18,11 @@ use GuzzleHttp\Psr7\Response;
 class Fax
 {
     /**
+     * @var GenericFactory
+     */
+    private $factory;
+
+    /**
      * @var \Interfax\Client;
      */
     protected $client;

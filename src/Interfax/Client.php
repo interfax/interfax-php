@@ -108,6 +108,20 @@ class Client
     }
 
     /**
+     * @param array $params
+     * @return array
+     */
+    protected function parseQueryParams($params = [])
+    {
+        foreach ($params as $k => $v) {
+            if (is_bool($v)) {
+                $params[$k] = (string) $v;
+            }
+        }
+        return $params;
+    }
+
+    /**
      * POST request
      *
      * @param $uri
@@ -119,7 +133,7 @@ class Client
     {
         $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
 
-        return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $params));
+        return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params)));
     }
 
     /**
@@ -133,14 +147,14 @@ class Client
     {
         $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
 
-        return $this->parseResponse($this->getHttpClient()->request('GET', $uri, $params));
+        return $this->parseResponse($this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params)));
     }
 
     /**
      * Parses the responses in a consistent manner for handling by various classes.
      *
      * @param ResponseInterface $response
-     * @return mixed|string
+     * @return mixed|string|array
      * @throws \Exception
      */
     protected function parseResponse(ResponseInterface $response)

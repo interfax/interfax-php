@@ -56,7 +56,11 @@ class DeliveryTest extends BaseTest
         $params['file'] = __DIR__ . '/../test.pdf';
 
         $delivery = new Delivery($this->client, $params);
-        $qp = $delivery->getQueryParams();
+        $r = new \ReflectionClass('Interfax\Outbound\Delivery');
+        $r_qp = $r->getProperty('query_params');
+        $r_qp->setAccessible(true);
+        $qp = $r_qp->getValue($delivery);
+
         // file is not a query param
         unset($params['file']);
         $this->assertEquals(count($params), count($qp));
@@ -83,19 +87,13 @@ class DeliveryTest extends BaseTest
 
         $client = $this->getClientWithFactory([$guzzle]);
 
-        $delivery = $this->getMockBuilder('Interfax\Outbound\Delivery')
-            ->setConstructorArgs([$client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']] ])
-            ->setMethods(['createFax'])
-            ->getMock();
-
         $fax = $this->getMockBuilder('Interfax\Outbound\Fax')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $delivery->expects($this->once())
-            ->method('createFax')
-            ->with(21)
-            ->will($this->returnValue($fax));
+        $factory = $this->getFactory([[$fax, [$client, 21]]]);
+
+        $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']], $factory);
 
         $this->assertEquals($fax, $delivery->send());
     }
