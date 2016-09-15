@@ -17,38 +17,38 @@ use Interfax\Outbound\Fax;
 
 class Outbound
 {
+    /**
+     * @var GenericFactory
+     */
+    private $factory;
+
     protected $client;
 
-    public function __construct(Client $client)
+    public function __construct(Client $client, GenericFactory $factory = null)
     {
         $this->client = $client;
-    }
-
-    /**
-     * @param $definition
-     * @return Fax
-     * @throws \InvalidArgumentException
-     */
-    public function createFax($definition)
-    {
-        if (!array_key_exists('id', $definition)) {
-            throw new \InvalidArgumentException('Missing required definition parameter "id"');
+        if ($factory === null) {
+            $factory = new GenericFactory();
         }
-
-        return new Fax($this->client, $definition['id'], $definition);
+        $this->factory = $factory;
     }
+
+
 
     /**
      * @param array $definitions
      * @return Fax[]
      * @throws \InvalidArgumentException
      */
-    public function createFaxes($definitions)
+    protected function createFaxes($definitions)
     {
         $res = [];
         foreach ($definitions as $f_data) {
-            if ($fax = $this->createFax($f_data)) {
-                $res[] = $fax;
+            if (array_key_exists('id', $f_data)) {
+                $res[] = $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, $f_data['id'], $f_data]);
+            }
+            else {
+                throw new \InvalidArgumentException('No id attribute found in fax definition');
             }
         }
 

@@ -12,7 +12,7 @@
  */
 namespace Interfax;
 
-class OutboundTest extends \PHPUnit_Framework_TestCase
+class OutboundTest extends BaseTest
 {
     public function test_completed()
     {
@@ -21,51 +21,25 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['get'])
             ->getMock();
 
-        $response = [['id' =>  12],['id' => 14]];
+        $response = [['id' =>  12, 'senderCSID' => 'Interfax'],['id' => 14, 'senderCSID' => 'Interfax']];
 
         $client->expects($this->once())
             ->method('get')
             ->with('/outbound/faxes/completed')
             ->will($this->returnValue($response));
 
+        $fax1 = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
+        $fax2 = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
+        $factory = $this->getFactory([
+            [$fax1, [$client, 12, $response[0]]],
+            [$fax2, [$client, 14, $response[1]]]
+        ]);
 
-        $outbound = $this->getMockBuilder('Interfax\Outbound')
-            ->setConstructorArgs([$client])
-            ->setMethods(['createFaxes'])
-            ->getMock();
-
-        $fax = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
-
-        $outbound->expects($this->once())
-            ->method('createFaxes')
-            ->with([['id' =>  12],['id' => 14]])
-            ->will($this->returnValue([$fax]));
+        $outbound = new Outbound($client, $factory);
 
         $res = $outbound->completed(['12', '14']);
 
-        $this->assertEquals([$fax], $res);
-    }
-
-    public function test_create_faxes()
-    {
-        $outbound = $this->getMockBuilder('Interfax\Outbound')
-            ->disableOriginalConstructor()
-            ->setMethods(['createFax'])
-            ->getMock();
-
-        $outbound->expects($this->exactly(3))
-            ->method('createFax')
-            ->will($this->returnValue('foo'));
-
-        $this->assertCount(3, $outbound->createFaxes([['id' => 12],['id' => 14],['id' => 21]]) );
-    }
-
-    public function test_create_fax()
-    {
-        $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
-        $outbound = new Outbound($client);
-
-        $this->assertInstanceOf('Interfax\Outbound\Fax', $outbound->createFax(['id' => 12]));
+        $this->assertEquals([$fax1, $fax2], $res);
     }
 
     public function test_recent()
@@ -75,25 +49,18 @@ class OutboundTest extends \PHPUnit_Framework_TestCase
             ->setMethods(['get'])
             ->getMock();
 
-        $response = [['id' =>  21],['id' => 14]];
+        $response = [['id' =>  21]];
 
         $client->expects($this->once())
             ->method('get')
             ->with('/outbound/faxes', ['limit' => 5])
             ->will($this->returnValue($response));
 
-
-        $outbound = $this->getMockBuilder('Interfax\Outbound')
-            ->setConstructorArgs([$client])
-            ->setMethods(['createFaxes'])
-            ->getMock();
-
         $fax = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
 
-        $outbound->expects($this->once())
-            ->method('createFaxes')
-            ->with([['id' =>  21],['id' => 14]])
-            ->will($this->returnValue([$fax]));
+        $factory = $this->getFactory([[$fax, [$client, 21, $response[0]]]]);
+
+        $outbound = new Outbound($client, $factory);
 
         $res = $outbound->recent(['limit' => 5]);
 
