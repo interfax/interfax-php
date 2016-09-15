@@ -91,8 +91,47 @@ $client->outbound->completed($fax_ids);
 
 The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
 
-TODO: document methods
+### Fax Status
 
-Properties on the Fax are defined by what method call has been used to create the instance. Requesting a property that has not been received will raise a SPL ```\OutOfBoundsException```
+```php
+// Interfax\Outbound\Fax
+$fax = $interfax->deliver(['faxNumber' => '+11111111112', 'file' => 'folder/file.pdf']);
+// get the status without refreshing against the API
+$status = $fax->getStatus(false);
+// get the status with a refresh against the API
+$status = $fax->getStatus();
+```
+
+The values for the different status codes are [Documented here](https://www.interfax.net/en/help/error_codes)
+
+### Fax Location
+
+Each Fax has a resource location property. This is accessible as
+
+```php
+$fax->getLocation();
+```
+
+### Fax Properties
+
+Properties on the Fax vary depending on which method call has been used to create the instance. Requesting a property that has not been received will raise a SPL ```\OutOfBoundsException```
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2921)
+
+These are all accessible on a fax instance:
+
+```php
+echo $fax->completionTime
+echo $fax->duration
+...
+```
+
+Note values will all be returned as strings.
+
+_TODO_
+
+For convenience, a hash array of the properties can be retrieved
+
+```php
+$fax->attributes;
+```

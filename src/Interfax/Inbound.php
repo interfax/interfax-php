@@ -59,12 +59,12 @@ class Inbound
         }
 
         //TODO: make this better
-        throw new \Exception('unexpected result');
+        throw new \RuntimeException('unexpected API response');
     }
 
     /**
      * @param $id
-     * @return Interfax\Inbound\Fax|void
+     * @return \Interfax\Inbound\Fax|void
      * @throws RequestException
      */
     public function find($id)

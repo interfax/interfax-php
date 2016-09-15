@@ -13,6 +13,7 @@
 
 namespace Interfax;
 
+use Interfax\Exception\RequestException;
 use Interfax\Outbound\Fax;
 
 class Outbound
@@ -59,6 +60,7 @@ class Outbound
      * @param array $ids
      * @return Fax[]
      * @throws \InvalidArgumentException
+     * @throws RequestException
      */
     public function completed($ids = [])
     {
@@ -76,6 +78,8 @@ class Outbound
     /**
      * @param $params
      * @return Outbound\Fax[]
+     * @throws \InvalidArgumentException
+     * @throws RequestException
      */
     public function recent($params)
     {

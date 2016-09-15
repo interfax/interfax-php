@@ -14,9 +14,7 @@
 namespace Interfax;
 
 use \GuzzleHttp\Client as GuzzleClient;
-use \GuzzleHttp\Psr7\Request;
 use Interfax\Exception\RequestException;
-use Interfax\Outbound\Delivery;
 use Interfax\Outbound\Fax;
 use Psr\Http\Message\ResponseInterface;
 
@@ -52,6 +50,7 @@ class Client
      * Client constructor.
      * @param array $params
      * @param GenericFactory|null $factory - allows for testing injection with abstract class instantiation
+     * @throws \InvalidArgumentException
      */
     public function __construct($params = [], GenericFactory $factory = null)
     {
@@ -144,7 +143,7 @@ class Client
             return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params)));
         }
         catch (\GuzzleHttp\Exception\RequestException $e) {
-            throw RequestException::create("Problem with POST request", $e);
+            throw RequestException::create('Problem with POST request', $e);
         }
 
     }
@@ -166,7 +165,7 @@ class Client
             return $this->parseResponse($response);
         }
         catch (\GuzzleHttp\Exception\RequestException $e) {
-            throw RequestException::create("Problem with GET request", $e);
+            throw RequestException::create('Problem with GET request', $e);
         }
 
     }
@@ -190,9 +189,7 @@ class Client
             }
         }
         else {
-            // TODO: better exceptions
-            //throw new \Exception("Unexpected response code: " . $response->getStatusCode());
-            throw new RequestException("Unexpected response code", RequestException::$UNEXPECTED_RESPONSE_CODE, $response->getStatusCode());
+            throw new RequestException('Unexpected response code', RequestException::$UNEXPECTED_RESPONSE_CODE, $response->getStatusCode());
         }
     }
 
@@ -210,6 +207,7 @@ class Client
 
     /**
      * @return string
+     * @throws RequestException
      */
     public function getBalance()
     {

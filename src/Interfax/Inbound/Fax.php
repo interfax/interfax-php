@@ -68,6 +68,7 @@ class Fax
     /**
      * @param string $email
      * @return bool
+     * @throws RequestException
      */
     public function resend($email = null)
     {

@@ -12,9 +12,10 @@
 
 
 namespace Interfax\Outbound;
+use Interfax\Exception\RequestException;
 use \Interfax\File;
 use Interfax\GenericFactory;
-use Psr\Http\Message\ResponseInterface;
+
 
 class Delivery
 {
@@ -34,6 +35,7 @@ class Delivery
      *
      * @param \Interfax\Client $client
      * @param array $params
+     * @param GenericFactory $factory
      * @throws \InvalidArgumentException
      */
     public function __construct(\Interfax\Client $client, $params = [], GenericFactory $factory = null)
@@ -68,13 +70,13 @@ class Delivery
     protected function resolveFiles(&$params)
     {
         $files = [];
-        if (array_key_exists('file', $params)) {
-            if (array_key_exists('files', $params)) {
+        if (isset($params['file'])) {
+            if (isset($params['files'])) {
                 throw new \InvalidArgumentException('Can only provide file or files for ' . __CLASS__);
             }
             $files[] = $params['file'];
             unset($params['file']);
-        } elseif (array_key_exists('files', $params)) {
+        } elseif (isset($params['files'])) {
             $files = $params['files'];
             unset($params['files']);
         } else {
@@ -83,7 +85,7 @@ class Delivery
 
         foreach ($files as $f) {
             if (is_array($f)) {
-                if (count($f) == 2) {
+                if (count($f) === 2) {
                     $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f[0], $f[1]]);
                 }
             }
@@ -112,6 +114,7 @@ class Delivery
     /**
      * @return Fax
      * @throws \InvalidArgumentException
+     * @throws RequestException
      */
     public function send()
     {

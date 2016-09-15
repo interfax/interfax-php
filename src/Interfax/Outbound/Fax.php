@@ -13,15 +13,12 @@
 namespace Interfax\Outbound;
 
 use Interfax\Client;
-use GuzzleHttp\Psr7\Response;
+
+use Interfax\Exception\RequestException;
+
 
 class Fax
 {
-    /**
-     * @var GenericFactory
-     */
-    private $factory;
-
     /**
      * @var \Interfax\Client;
      */
@@ -51,6 +48,7 @@ class Fax
 
     /**
      * Request the details of this Fax from the api and update the record structure accordingly
+     * @throws RequestException
      */
     protected function updateRecord()
     {
@@ -77,6 +75,9 @@ class Fax
         return $this->status;
     }
 
+    /**
+     * @return string
+     */
     public function getLocation()
     {
         return $this->resource_uri;
