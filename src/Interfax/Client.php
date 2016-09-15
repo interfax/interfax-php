@@ -29,7 +29,11 @@ class Client
     /**
      * @var Outbound
      */
-    private $outbound;
+    protected $outbound;
+    /**
+     * @var Inbound
+     */
+    protected $inbound;
 
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
@@ -100,7 +104,7 @@ class Client
         if (!$this->http) {
             $this->http = $this->factory->instantiateClass(
                 'GuzzleHttp\Client',
-                ['base_uri' => static::$DEFAULT_BASE_URI]
+                [['base_uri' => static::$DEFAULT_BASE_URI]]
             );
         }
 
@@ -113,9 +117,11 @@ class Client
      */
     protected function parseQueryParams($params = [])
     {
-        foreach ($params as $k => $v) {
-            if (is_bool($v)) {
-                $params[$k] = (string) $v;
+        if (array_key_exists('query', $params)) {
+            foreach ($params['query'] as $k => $v) {
+                if (is_bool($v)) {
+                    $params['query'][$k] = $v ? '1' : '0';
+                }
             }
         }
         return $params;

@@ -169,4 +169,37 @@ class ClientTest extends BaseTest
 
         $this->assertEquals($outbound, $client->outbound);
     }
+
+    public function test_inbound_property()
+    {
+        $client = $this->getClient();
+
+        $this->assertInstanceOf('Interfax\Inbound', $client->inbound);
+    }
+
+    public function test_boolean_parsing_for_query_string()
+    {
+        $mock = new MockHandler([
+            new Response(201, ['Location' => 'http://myfax.resource.uri'], '')
+        ]);
+        $stack = HandlerStack::create($mock);
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = $this->getClientWithFactory([$guzzle]);
+
+        $response = $client->get('test/uri',['query' => ['foo' => true, 'bar' => false]]);
+
+        $this->assertEquals('http://myfax.resource.uri', $response);
+        $this->assertEquals(1, count($container));
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('foo=1&bar=0', $transaction['request']->getUri()->getQuery());
+        $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+    }
 }

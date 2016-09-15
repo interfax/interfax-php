@@ -22,15 +22,19 @@ class InboundTest extends BaseTest
             ->setMethods(['get'])
             ->getMock();
 
-        $response = [['id' =>  12],['id' => 14]];
+        $response = [['messageId' =>  12, 'phoneNumber' => '111'],['messageId' => 14, 'phoneNumber' => '2222']];
 
         $client->expects($this->once())
             ->method('get')
-            ->with('/inbound/faxes', ['unreadOnly' => false])
+            ->with('/inbound/faxes', ['query' => ['unreadOnly' => false]])
             ->will($this->returnValue($response));
 
         // 2 inbound faxes will be crated for the 2 response structs
-        $factory = $this->getFactory([new Inbound\Fax($client), new Inbound\Fax($client)]);
+        $factory = $this->getFactory(
+            [
+                [new Inbound\Fax($client, 12), [$client, 12, $response[0]]],
+                [new Inbound\Fax($client, 40), [$client, 14, $response[1]]]
+            ]);
 
         $inbound = new Inbound($client, $factory);
 
