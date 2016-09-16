@@ -106,6 +106,14 @@ class Fax
     }
 
     /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return $this->record;
+    }
+
+    /**
      * Resend the fax, possibly to a new fax number
      *
      * @param string $fax_number
@@ -124,5 +132,16 @@ class Fax
         $path = parse_url($location, PHP_URL_PATH);
         $bits = explode('/', $path);
         return $this->factory->instantiateClass(__CLASS__, [$this->client, array_pop($bits)]);
+    }
+
+    /**
+     * @return bool
+     * @throws RequestException
+     */
+    public function cancel()
+    {
+        $this->client->post($this->resource_uri . '/cancel');
+
+        return true;
     }
 }

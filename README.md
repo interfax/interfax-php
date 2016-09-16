@@ -37,7 +37,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client)
+[Client](#client) [Outbound](#outbound) [Exceptions](#exceptions)
 
 ## Client
 
@@ -132,6 +132,13 @@ Each Fax has a resource location property. This is accessible as
 $fax->getLocation();
 ```
 
+### Fax Cancel
+
+```php
+$fax->cancel();
+//returns true on success
+```
+
 ### Fax Properties
 
 Properties on the Fax vary depending on which method call has been used to create the instance. Requesting a property that has not been received will raise a SPL ```\OutOfBoundsException```
@@ -148,10 +155,29 @@ echo $fax->duration
 
 Note values will all be returned as strings.
 
-_TODO_
-
 For convenience, a hash array of the properties can be retrieved
 
 ```php
-$fax->attributes;
+$fax->attributes();
+```
+
+## Exceptions
+
+Any method call that involves a call to the Interfax RESTful API may throw an instance of ```Interfax\Exception\RequestEception```. 
+ 
+An exception is thrown for any requests that do not return a successful HTTP Status code. The goal of this Exception is to provide a convenience wrapper around information that may have been returned.
+
+Certain responses from the API will provide more detail, and where this occurs, it will be appended to the message of the Exception.
+
+```
+try {
+    $interfax->deliver(...);
+} catch (Interfax\Exception\RequestException $e) {
+    echo $e->getMessage();
+    // contains text detail that is available
+    echo $e->getStatusCode();
+    // the http status code that was received
+    throw $e->getWrappedException();
+    // The underlying Guzzle exception that was caught by the Interfax Client.
+}
 ```

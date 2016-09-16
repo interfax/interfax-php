@@ -112,4 +112,65 @@ class FaxTest extends BaseTest
         $this->assertEquals($resent_fax, $fax->resend());
     }
 
+    public function test_attributes()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')->disableOriginalConstructor()->getMock();
+
+        $definition = [
+            'submitTime' => '2012-06-20T06:08:18',
+            'contact' => '',
+            'destinationFax' => '0081287282867',
+            'replyEmail' => 'nadya@interfax.net',
+            'subject' => 'test',
+            'pagesSubmitted' => 1,
+            'senderCSID' => 'INTERFAX',
+            'attemptsToPerform' => 4,
+            'pageSize' => 'A4',
+            'resolution' => 'Portrait',
+            'pageResolution' => 'Fine',
+            'pageOrientation' => 'Portrait',
+            'rendering' => 'Fine',
+            'pageHeade' => '0',
+            'userId' => 'nadya',
+            'pagesSent' => 1,
+            'completionTime' => '2012-06-20T06:09:08',
+            'remoteCSID' => '81287282867',
+            'duration' => 37,
+            'priority' => 2,
+            'units' => 1.00,
+            'costPerUnit' => 0.9500,
+            'attemptsMade' => 1,
+            'id' => 279415116,
+            'uri' => 'https://rest.interfax.net/outbound/faxes/279415116',
+            'status' => 0
+        ];
+
+        $fax = new Fax($client, 279415116, $definition);
+
+        $this->assertEquals($definition, $fax->attributes());
+    }
+
+    public function test_cancel()
+    {
+        $mock = new MockHandler([
+            new Response(200, [], '')
+        ]);
+
+        $stack = HandlerStack::create($mock);
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = $this->getClientWithFactory([$guzzle]);
+
+        $fax = new Fax($client, 21);
+
+        $this->assertTrue($fax->cancel());
+        $transaction = $container[0];
+        $this->assertEquals('/outbound/faxes/21/cancel', $transaction['request']->getUri()->getPath());
+    }
 }
