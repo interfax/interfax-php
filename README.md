@@ -87,6 +87,15 @@ $client->outbound->completed($fax_ids);
 // Interfax\Outbound\Fax[]
 ```
 
+### Resend a Fax
+
+The outbound resend will return a new outbound Fax representing the re-sent fax.
+
+```php
+$fax = $client->outbound->resend($id);
+// Interfax\Outbound\Fax
+```
+
 ## Outbound Fax
 
 The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
@@ -103,6 +112,17 @@ $status = $fax->getStatus();
 ```
 
 The values for the different status codes are [Documented here](https://www.interfax.net/en/help/error_codes)
+
+### Resend
+
+Resending a fax will create a new Fax object:
+
+```php
+$new_fax = $fax->resend('+1111111');
+// Interfax\Outbound\Fax
+$fax->getLocation() === $new_fax->getLocation();
+// false
+```
 
 ### Fax Location
 

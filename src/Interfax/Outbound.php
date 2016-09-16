@@ -13,6 +13,7 @@
 
 namespace Interfax;
 
+use GuzzleHttp\Psr7\Request;
 use Interfax\Exception\RequestException;
 use Interfax\Outbound\Fax;
 
@@ -86,4 +87,17 @@ class Outbound
         return $this->createFaxes($this->client->get('/outbound/faxes', $params));
     }
 
+
+    /**
+     * @param $id
+     * @param null $fax_number
+     * @return mixed
+     * @throws RequestException
+     */
+    public function resend($id, $fax_number = null)
+    {
+        $fax = $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, $id]);
+
+        return $fax->resend($fax_number);
+    }
 }
