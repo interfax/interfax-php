@@ -53,7 +53,7 @@ class OutboundTest extends BaseTest
 
         $client->expects($this->once())
             ->method('get')
-            ->with('/outbound/faxes', ['limit' => 5])
+            ->with('/outbound/faxes', ['query' => ['limit' => 5]])
             ->will($this->returnValue($response));
 
         $fax = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
@@ -112,5 +112,29 @@ class OutboundTest extends BaseTest
         $outbound = new Outbound($client, $factory);
 
         $this->assertEquals($resent_fax, $outbound->resend(34552, $fax_number));
+    }
+
+    public function test_search()
+    {
+        $test_params = ['status' => 'Inprocess'];
+        $search_result = [
+            ['id' => 5, 'status' => -32],
+            ['id' => 9, 'status' => 40],
+        ];
+
+        $client = $this->getMockBuilder('Interfax\Client')->disableOriginalConstructor()->getMock();
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/outbound/search', ['query' => $test_params])
+            ->will($this->returnValue($search_result));
+
+        $factory = $this->getFactory([
+            [new Outbound\Fax($client,5),[$client, 5, $search_result[0]] ],
+            [new Outbound\Fax($client, 9),[$client, 9, $search_result[1]] ]
+        ]);
+
+        $outbound = new Outbound($client, $factory);
+
+        $this->assertCount(2, $outbound->search($test_params));
     }
 }

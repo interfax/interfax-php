@@ -96,6 +96,17 @@ $fax = $client->outbound->resend($id);
 // Interfax\Outbound\Fax
 ```
 
+### Search for Faxes
+
+```php
+$faxes = $client->outbound->search([...]);
+// Interfax\Outbound\Fax[]
+```
+
+takes a single hash array, keyed by the accepted search parameters for the outbound search API endpoint
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2959)
+
 ## Outbound Fax
 
 The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.

@@ -84,7 +84,7 @@ class Outbound
      */
     public function recent($params)
     {
-        return $this->createFaxes($this->client->get('/outbound/faxes', $params));
+        return $this->createFaxes($this->client->get('/outbound/faxes', ['query' => $params]));
     }
 
 
@@ -99,5 +99,16 @@ class Outbound
         $fax = $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, $id]);
 
         return $fax->resend($fax_number);
+    }
+
+    /**
+     * @param array $params
+     * @return Outbound\Fax[]
+     * @throws \InvalidArgumentException
+     * @throws RequestException
+     */
+    public function search($params = [])
+    {
+        return $this->createFaxes($this->client->get('/outbound/search', ['query' => $params]));
     }
 }
