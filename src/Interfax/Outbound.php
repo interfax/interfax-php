@@ -82,9 +82,13 @@ class Outbound
      * @throws \InvalidArgumentException
      * @throws RequestException
      */
-    public function recent($params)
+    public function recent($query_params = [])
     {
-        return $this->createFaxes($this->client->get('/outbound/faxes', ['query' => $params]));
+        $params = [];
+        if (count($query_params)) {
+            $params = ['query' => $query_params];
+        }
+        return $this->createFaxes($this->client->get('/outbound/faxes', $params));
     }
 
 

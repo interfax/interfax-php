@@ -16,6 +16,7 @@ use Interfax\Client;
 
 use Interfax\Exception\RequestException;
 use Interfax\GenericFactory;
+use Interfax\Image;
 
 
 class Fax
@@ -154,5 +155,16 @@ class Fax
         $this->client->post($this->resource_uri . '/hide');
 
         return true;
+    }
+
+    /**
+     * @return Image
+     */
+    public function image()
+    {
+        $response = $this->client->get($this->resource_uri . '/image');
+
+        return new Image($response);
+
     }
 }

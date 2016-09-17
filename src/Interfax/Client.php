@@ -185,7 +185,7 @@ class Client
             } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
                 return json_decode((string) $response->getBody(), true);
             } else {
-                return (string) $response->getBody();
+                return $response->getBody();
             }
         }
         else {
