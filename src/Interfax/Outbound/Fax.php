@@ -144,4 +144,15 @@ class Fax
 
         return true;
     }
+
+    /**
+     * @return bool
+     * @throws RequestException
+     */
+    public function hide()
+    {
+        $this->client->post($this->resource_uri . '/hide');
+
+        return true;
+    }
 }

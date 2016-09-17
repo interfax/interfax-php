@@ -22,6 +22,22 @@ use Interfax\BaseTest;
 
 class FaxTest extends BaseTest
 {
+    protected function getClientWithResponses($responses = [], &$container)
+    {
+        $mock = new MockHandler($responses);
+
+        $stack = HandlerStack::create($mock);
+
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = $this->getClientWithFactory([$guzzle]);
+
+        return $client;
+    }
 
     public function test_successful_construction()
     {
@@ -86,20 +102,11 @@ class FaxTest extends BaseTest
 
     public function test_resend()
     {
-        $mock = new MockHandler([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ]);
-
-        $stack = HandlerStack::create($mock);
-
         $container = [];
-        $history = Middleware::history($container);
 
-        $stack->push($history);
-
-        $guzzle = new GuzzleClient(['handler' => $stack]);
-
-        $client = $this->getClientWithFactory([$guzzle]);
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+        ], $container);
 
         $resent_fax = $this->getMockBuilder('Interfax\Outbound\Fax')
             ->disableOriginalConstructor()
@@ -110,6 +117,9 @@ class FaxTest extends BaseTest
         $fax = new Fax($client, 45, [], $factory);
 
         $this->assertEquals($resent_fax, $fax->resend());
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes/45/resend', $transaction['request']->getUri()->getPath());
     }
 
     public function test_attributes()
@@ -152,25 +162,32 @@ class FaxTest extends BaseTest
 
     public function test_cancel()
     {
-        $mock = new MockHandler([
-            new Response(200, [], '')
-        ]);
-
-        $stack = HandlerStack::create($mock);
-
         $container = [];
-        $history = Middleware::history($container);
-
-        $stack->push($history);
-
-        $guzzle = new GuzzleClient(['handler' => $stack]);
-
-        $client = $this->getClientWithFactory([$guzzle]);
+         $client = $this->getClientWithResponses([
+            new Response(200, [], '')
+        ], $container);
 
         $fax = new Fax($client, 21);
 
         $this->assertTrue($fax->cancel());
+
         $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes/21/cancel', $transaction['request']->getUri()->getPath());
+    }
+
+    public function test_hide()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(200, [], '')
+        ], $container);
+
+        $fax = new Fax($client, 21);
+
+        $this->assertTrue($fax->hide());
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes/21/hide', $transaction['request']->getUri()->getPath());
     }
 }

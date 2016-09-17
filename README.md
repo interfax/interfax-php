@@ -124,6 +124,14 @@ $status = $fax->getStatus();
 
 The values for the different status codes are [Documented here](https://www.interfax.net/en/help/error_codes)
 
+### Fax Location
+
+Each Fax has a resource location property. This is accessible as
+
+```php
+$fax->getLocation();
+```
+
 ### Resend
 
 Resending a fax will create a new Fax object:
@@ -135,13 +143,7 @@ $fax->getLocation() === $new_fax->getLocation();
 // false
 ```
 
-### Fax Location
-
-Each Fax has a resource location property. This is accessible as
-
-```php
-$fax->getLocation();
-```
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2908)
 
 ### Fax Cancel
 
@@ -149,6 +151,17 @@ $fax->getLocation();
 $fax->cancel();
 //returns true on success
 ```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2939)
+
+### Fax Hide
+
+```php
+$fax->hide();
+//returns true on success
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2940)
 
 ### Fax Properties
 
