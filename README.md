@@ -111,6 +111,8 @@ takes a single hash array, keyed by the accepted search parameters for the outbo
 
 The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
 
+It offers several methods to manage or retrieve information about the fax.
+
 ### Fax Status
 
 ```php
@@ -162,6 +164,17 @@ $fax->hide();
 ```
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2940)
+
+### Fax Image
+
+```php
+$image = $fax->image();
+// Interfax\Image
+$image->save('path/to/save/file/to.pdf');
+// returns true on success
+```
+
+The fax image format is determined by the settings on the Interfax account being used, as detailed in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
 
 ### Fax Properties
 
