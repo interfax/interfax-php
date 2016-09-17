@@ -199,7 +199,7 @@ class ClientTest extends BaseTest
         $this->assertEquals(1, count($container));
         $transaction = $container[0];
         $this->assertEquals('GET', $transaction['request']->getMethod());
-        $this->assertEquals('foo=1&bar=0', $transaction['request']->getUri()->getQuery());
+        $this->assertEquals('foo=TRUE&bar=FALSE', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
     }
 }

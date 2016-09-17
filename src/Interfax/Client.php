@@ -120,7 +120,7 @@ class Client
         if (array_key_exists('query', $params)) {
             foreach ($params['query'] as $k => $v) {
                 if (is_bool($v)) {
-                    $params['query'][$k] = $v ? '1' : '0';
+                    $params['query'][$k] = $v ? 'TRUE' : 'FALSE';
                 }
             }
         }
