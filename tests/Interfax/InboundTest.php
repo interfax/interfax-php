@@ -12,22 +12,18 @@
  */
 namespace Interfax;
 
+use GuzzleHttp\Psr7\Response;
+
 class InboundTest extends BaseTest
 {
 
     public function test_incoming()
     {
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
         $response = [['messageId' =>  12, 'phoneNumber' => '111'],['messageId' => 14, 'phoneNumber' => '2222']];
-
-        $client->expects($this->once())
-            ->method('get')
-            ->with('/inbound/faxes', ['query' => ['unreadOnly' => false]])
-            ->will($this->returnValue($response));
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+        ], $container);
 
         // 2 inbound faxes will be crated for the 2 response structs
         $factory = $this->getFactory(
@@ -41,21 +37,19 @@ class InboundTest extends BaseTest
         $faxes = $inbound->incoming(['unreadOnly' => false]);
 
         $this->assertCount(2, $faxes);
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/inbound/faxes', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('unreadOnly=FALSE', $transaction['request']->getUri()->getQuery());
     }
 
     public function test_find()
     {
-        $client = $this->getMockBuilder('Interfax\Client')
-            ->disableOriginalConstructor()
-            ->setMethods(['get'])
-            ->getMock();
-
         $response = ['messageId' =>  12, 'phoneNumber' => '111'];
-
-        $client->expects($this->once())
-            ->method('get')
-            ->with('/inbound/faxes/12')
-            ->will($this->returnValue($response));
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+        ], $container);
 
         $fax = new Inbound\Fax($client, 12);
         $factory = $this->getFactory(
@@ -66,5 +60,9 @@ class InboundTest extends BaseTest
         $inbound = new Inbound($client, $factory);
 
         $this->assertEquals($fax, $inbound->find(12));
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/inbound/faxes/12', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
 }

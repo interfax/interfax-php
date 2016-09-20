@@ -122,7 +122,7 @@ class Delivery
             'query' => $this->query_params,
         ];
 
-        $location = $this->client->post('outbound/faxes', $params, $this->getMultipart());
+        $location = $this->client->post('/outbound/faxes', $params, $this->getMultipart());
         // TODO: clean this up
         $path = parse_url($location, PHP_URL_PATH);
         $bits = explode('/', $path);

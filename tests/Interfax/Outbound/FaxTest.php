@@ -13,32 +13,11 @@
 
 namespace Interfax\Outbound;
 
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use Interfax\BaseTest;
 
 class FaxTest extends BaseTest
 {
-    protected function getClientWithResponses($responses = [], &$container)
-    {
-        $mock = new MockHandler($responses);
-
-        $stack = HandlerStack::create($mock);
-
-        $history = Middleware::history($container);
-
-        $stack->push($history);
-
-        $guzzle = new GuzzleClient(['handler' => $stack]);
-
-        $client = $this->getClientWithFactory([$guzzle]);
-
-        return $client;
-    }
-
     public function test_successful_construction()
     {
         $client = $this->getMockBuilder('Interfax\Client')
@@ -120,6 +99,31 @@ class FaxTest extends BaseTest
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes/45/resend', $transaction['request']->getUri()->getPath());
+    }
+
+    public function test_resend_with_param()
+    {
+        $container = [];
+
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+        ], $container);
+
+        $resent_fax = $this->getMockBuilder('Interfax\Outbound\Fax')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factory = $this->getFactory([[$resent_fax, [$client, 21]]]);
+
+        $fax = new Fax($client, 45, [], $factory);
+
+        $resend_number = '+1111111111';
+
+        $this->assertEquals($resent_fax, $fax->resend($resend_number));
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes/45/resend', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('faxNumber=' . urlencode($resend_number), $transaction['request']->getUri()->getQuery());
     }
 
     public function test_attributes()

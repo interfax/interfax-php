@@ -12,6 +12,11 @@
  */
 namespace Interfax;
 
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
+
 /**
  * Class BaseTest
  * @package Interfax
@@ -59,5 +64,23 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         $factory = $this->getFactory($returns);
 
         return new Client(['username' => 'test_user', 'password' => 'test_password'], $factory);
+    }
+
+    // wrapper to allow "simple" inspection of the requests sent to the API endpoints
+    protected function getClientWithResponses($responses = [], &$container)
+    {
+        $mock = new MockHandler($responses);
+
+        $stack = HandlerStack::create($mock);
+
+        $history = Middleware::history($container);
+
+        $stack->push($history);
+
+        $guzzle = new GuzzleClient(['handler' => $stack]);
+
+        $client = $this->getClientWithFactory([$guzzle]);
+
+        return $client;
     }
 }

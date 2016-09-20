@@ -72,20 +72,10 @@ class DeliveryTest extends BaseTest
 
     public function test_it_uses_the_client_to_post_a_delivery_and_returns_fax()
     {
-        $mock = new MockHandler([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ]);
-
-        $stack = HandlerStack::create($mock);
-
         $container = [];
-        $history = Middleware::history($container);
-
-        $stack->push($history);
-
-        $guzzle = new GuzzleClient(['handler' => $stack]);
-
-        $client = $this->getClientWithFactory([$guzzle]);
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+        ], $container);
 
         $fax = $this->getMockBuilder('Interfax\Outbound\Fax')
             ->disableOriginalConstructor()
@@ -96,5 +86,9 @@ class DeliveryTest extends BaseTest
         $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => ['fake/file']], $factory);
 
         $this->assertEquals($fax, $delivery->send());
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('faxNumber=12345&bar=foo', $transaction['request']->getUri()->getQuery());
     }
 }
