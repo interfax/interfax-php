@@ -14,7 +14,7 @@
 namespace Interfax;
 
 use GuzzleHttp\Psr7\Stream;
-use SebastianBergmann\GlobalState\RuntimeException;
+use RuntimeException;
 
 /**
  * Class Image
@@ -36,6 +36,8 @@ class Image
     }
 
     /**
+     * Note a return of false does not indicate that a file has not been created or written to, just that it failed at some point.
+     *
      * @param $path
      * @return bool
      * @throws \RuntimeException
@@ -48,9 +50,15 @@ class Image
             throw new \RuntimeException("Could not open {$path} for saving");
         }
 
-        while (!$this->stream->eof()) {
-            // TODO consider chunking size configuration
-            fwrite($handle, $this->stream->read(1024*1024));
+        try {
+            while (!$this->stream->eof()) {
+                // TODO consider chunking size configuration
+                fwrite($handle, $this->stream->read(1024 * 1024));
+            }
+        } catch(\RuntimeException $e) {
+            // try to at least tidy up the resource
+            fclose($handle);
+            throw $e;
         }
 
         return fclose($handle);

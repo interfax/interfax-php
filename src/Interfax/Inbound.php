@@ -72,16 +72,24 @@ class Inbound
      * Search for an incoming fax with the given id.
      *
      * @param $id
-     * @return \Interfax\Inbound\Fax|void
+     * @return \Interfax\Inbound\Fax|null
      * @throws RequestException
      * @throws \RuntimeException
      */
     public function find($id)
     {
-        $json = $this->client->get('/inbound/faxes/' . $id);
+        try {
+            $json = $this->client->get('/inbound/faxes/' . $id);
 
-        if (is_array($json)) {
-            return $this->factory->instantiateClass('Interfax\Inbound\Fax', [$this->client, $id, $json]);
+            if (is_array($json)) {
+                return $this->factory->instantiateClass('Interfax\Inbound\Fax', [$this->client, $id, $json]);
+            }
+        } catch (RequestException $e) {
+            //TODO: test me
+            if ((int) $e->getStatusCode() === 404) {
+                return null;
+            }
+            throw $e;
         }
 
         throw new \RuntimeException('A reasonable but unhandled response was received');
