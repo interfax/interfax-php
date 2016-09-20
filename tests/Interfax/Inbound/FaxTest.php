@@ -88,16 +88,16 @@ class FaxTest extends BaseTest
     public function test_image()
     {
         $container = [];
-        $resp_resource = fopen(__DIR__ .'/../test.pdf', 'r');
+        $resp_resource = fopen(__DIR__ . '/../test.pdf', 'r');
         $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
         $client = $this->getClientWithResponses([
-            new Response(200, [], $stream)
+            new Response(200, [], $stream),
         ], $container);
 
         $result_image = $this->getMockBuilder('Interfax\Image')->disableOriginalConstructor()->getMock();
         $factory = $this->getFactory([
 //            $result_image
-            [$result_image, [$stream]]
+            [$result_image, [$stream]],
         ]);
 
         $fax = new Fax($client, 854759652, [], $factory);
@@ -108,5 +108,34 @@ class FaxTest extends BaseTest
         $this->assertEquals('/inbound/faxes/854759652/image', $transaction['request']->getUri()->getPath());
 
         fclose($resp_resource);
+    }
+
+    public function test_emails()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->setMethods(array('get'))
+            ->getMock();
+
+        $response = [
+            [
+                'emailAddress' => 'username@interfax.net',
+                'messageStatus' => 0,
+                'completionTime' => '2012-0623T17:24:11',
+            ],
+            [
+                'emailAddress' => 'username2@interfax.net',
+                'messageStatus' => 0,
+                'completionTime' => '2012-0623T17:25:11',
+            ],
+        ];
+
+        $client->expects($this->once())
+            ->method('get')
+            ->with('/inbound/faxes/854759652/emails')
+            ->will($this->returnValue($response));
+
+        $fax = new Fax($client, 854759652);
+        $this->assertEquals($response, $fax->emails());
     }
 }

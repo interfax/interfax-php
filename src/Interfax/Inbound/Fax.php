@@ -104,4 +104,15 @@ class Fax
 
         return $this->factory->instantiateClass('Interfax\Image', [$response]);
     }
+
+    /**
+     * Returns an array of hasharrays with the structure returned from the emails endpoint.
+     *
+     * @return array
+     * @throws RequestException
+     */
+    public function emails()
+    {
+        return $this->client->get($this->resource_uri . '/emails');
+    }
 }
