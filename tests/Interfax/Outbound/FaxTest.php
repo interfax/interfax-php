@@ -194,4 +194,26 @@ class FaxTest extends BaseTest
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes/21/hide', $transaction['request']->getUri()->getPath());
     }
+
+    public function test_image()
+    {
+        $container = [];
+        $resp_resource = fopen(__DIR__ .'/../test.pdf', 'r');
+        $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
+        $client = $this->getClientWithResponses([
+            new Response(200, [], $stream)
+        ], $container);
+
+        $result_image = $this->getMockBuilder('Interfax\Image')->disableOriginalConstructor()->getMock();
+        $factory = $this->getFactory([
+            [$result_image, [$stream]]
+        ]);
+
+        $fax = new Fax($client, 42, [], $factory);
+
+        $this->assertEquals($result_image, $fax->image());
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes/42/image', $transaction['request']->getUri()->getPath());
+    }
 }

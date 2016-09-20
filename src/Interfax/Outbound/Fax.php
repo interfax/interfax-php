@@ -21,6 +21,9 @@ use Interfax\Image;
 
 class Fax
 {
+    /**
+     * @var GenericFactory
+     */
     private $factory;
     /**
      * @var \Interfax\Client;
@@ -159,12 +162,13 @@ class Fax
 
     /**
      * @return Image
+     * @throws RequestException
      */
     public function image()
     {
         $response = $this->client->get($this->resource_uri . '/image');
-
-        return new Image($response);
+        
+        return $this->factory->instantiateClass('Interfax\Image', [$response]);
 
     }
 }
