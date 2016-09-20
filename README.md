@@ -37,7 +37,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client) [Outbound](#outbound) [Exceptions](#exceptions)
+[Client](#client) [Account Info](#account-info) [Outbound](#outbound) [Inbound](#inbound) [Query Parameters](#query-parameters) [Exceptions](#exceptions)
 
 ## Client
 
@@ -52,6 +52,20 @@ $client = new Interfax\Client(['username' => '...', 'password' => '...']);
 
 $client = new Interfax\Client();
 ```
+
+### Send a Fax
+
+To send a fax, call the deliver method on the client with the appropriate array of parameters. 
+
+```php
+$client = new Interfax\Client(['username' => '...', 'password' => '...']);
+$fax = $client->deliver([
+    'faxNumber' => '+442086090368',
+    'file' => __DIR__ . '/../tests/Interfax/test.pdf'
+]);
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2918)
 
 ## Account Info
 
@@ -87,14 +101,14 @@ $client->outbound->completed($fax_ids);
 // Interfax\Outbound\Fax[]
 ```
 
-### Resend a Fax
-
-The outbound resend will return a new outbound Fax representing the re-sent fax.
+### Get the Fax record
 
 ```php
-$fax = $client->outbound->resend($id);
-// Interfax\Outbound\Fax
+$fax = $client->outbound->find('id');
+//Interfax\Outbound\Fax || null
 ```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2921)
 
 ### Search for Faxes
 
@@ -107,13 +121,25 @@ takes a single hash array, keyed by the accepted search parameters for the outbo
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2959)
 
+### Resend a Fax
+
+The outbound resend will return a new outbound Fax representing the re-sent fax.
+
+```php
+$fax = $client->outbound->resend($id);
+// Interfax\Outbound\Fax sent to the original number
+$fax = $client->outbound->resend($id, $new_number);
+// Interfax\Outbound\Fax sent to the $new_number
+```
+
+
 ## Outbound Fax
 
 The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
 
 It offers several methods to manage or retrieve information about the fax.
 
-### Fax Status
+### Status
 
 ```php
 // Interfax\Outbound\Fax
@@ -126,28 +152,7 @@ $status = $fax->getStatus();
 
 The values for the different status codes are [Documented here](https://www.interfax.net/en/help/error_codes)
 
-### Fax Location
-
-Each Fax has a resource location property. This is accessible as
-
-```php
-$fax->getLocation();
-```
-
-### Resend
-
-Resending a fax will create a new Fax object:
-
-```php
-$new_fax = $fax->resend('+1111111');
-// Interfax\Outbound\Fax
-$fax->getLocation() === $new_fax->getLocation();
-// false
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2908)
-
-### Fax Cancel
+### Cancel
 
 ```php
 $fax->cancel();
@@ -156,7 +161,22 @@ $fax->cancel();
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2939)
 
-### Fax Hide
+
+### Resend
+
+Resending a fax will create a new Fax object:
+
+```php
+$new_fax = $fax->resend('+1111111');
+// Interfax\Outbound\Fax
+$fax->id === $new_fax->id;
+// false
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2908)
+
+
+### Hide
 
 ```php
 $fax->hide();
@@ -197,6 +217,99 @@ For convenience, a hash array of the properties can be retrieved
 ```php
 $fax->attributes();
 ```
+
+## Inbound
+
+```Interfax\Client``` has an ```inbound``` property that supports the API endpoints for receiving faxes, as described in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2913)
+
+```php
+$inbound = $client->inbound;
+//Interfax\Inbound
+```
+
+### Get a list of incoming faxes
+
+```php
+$faxes = $inbound->incoming(['unreadOnly' => true ...]); // see docs for list of supported query params
+//\Interfax\Inbound\Fax[]
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2935)
+
+### Get an individual fax record
+
+```php
+$fax = $inbound->find(123456);
+//\Interfax\Inbound\Fax || null
+```
+
+null is returned if the resource is found. Note that this could be because the user is not permissioned for the specific fax.
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2938)
+
+## Inbound Fax
+
+The incoming equivalent of the outbound fax class, the ```Interfax\Inbound\Fax``` class wraps the details of any incoming fax, and is returned by the ```Interfax\Inbound``` methods where appropriate.
+
+### Get the fax image
+
+```php
+$image = $fax->image();
+$image->save('path/to/save/location/filename.tiff');
+// bool
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
+
+### Get forwarding emails
+
+```php
+$email_array = $fax->emails();
+```
+
+The array is a reflection of the values returned from the emails endpoint:
+
+```php
+[
+    [
+       'emailAddress' => 'username@interfax.net',
+       'messageStatus' => 0,
+       'completionTime' => '2012-0623T17 => 24 => 11'
+    ],
+    //...
+];
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2930)
+
+### Mark Read/Unread
+
+Mark the fax as read:
+
+```php
+$fax->markRead();
+// returns true or throws exception
+$fax->markUnread();
+// returns true or throws exception
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2936)
+
+### Resend the email
+
+```php
+$fax->resend();
+```
+
+## Query parameters
+
+Where methods support a hash array structure of query parameters, these will be passed through to the API endpoint as provided. This ensures that any future parameters that might be added will be supported by the API as is.
+ 
+The only values that are manipulated are booleans, which will be translated to the text 'TRUE' and 'FALSE' as appropriate.
+
+_TODO_ implement support for DateTime objects.
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2927)
 
 ## Exceptions
 
