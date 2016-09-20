@@ -122,7 +122,7 @@ class OutboundTest extends BaseTest
         ];
 
         $client = $this->getClientWithResponses([
-            new Response(201, ['Content-Type' => 'text/json'], json_encode($search_results))
+            new Response(200, ['Content-Type' => 'text/json'], json_encode($search_results))
         ], $container);
 
         $test_params = ['status' => 'Inprocess'];
@@ -139,5 +139,28 @@ class OutboundTest extends BaseTest
         $this->assertEquals('GET', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/search', $transaction['request']->getUri()->getPath());
         $this->assertEquals('status=Inprocess', $transaction['request']->getUri()->getQuery());
+    }
+
+    public function test_find()
+    {
+        $response = ['id' =>  42, 'status' => 0, 'duration' => 4];
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+        ], $container);
+
+        $fax = new Outbound\Fax($client, 42, $response);
+        $factory = $this->getFactory(
+            [
+                [$fax, [$client, 42, $response]],
+            ]);
+
+        $outbound = new Outbound($client, $factory);
+
+        $this->assertEquals($fax, $outbound->find(12));
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes/12', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
 }

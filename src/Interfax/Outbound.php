@@ -106,6 +106,31 @@ class Outbound
     }
 
     /**
+     * Get an individual Fax resource for the given $id.
+     *
+     * @param $id
+     * @return null|Interfax\Outbound\Fax
+     */
+    public function find($id)
+    {
+        try {
+            $response = $this->client->get('/outbound/faxes/' . $id);
+
+            if (is_array($response) && array_key_exists('id', $response)) {
+                return $this->factory->instantiateClass('Interfax\Outbound\Fax',
+                    [$this->client, $response['id'], $response]);
+            }
+        } catch (\RuntimeException $e) {
+            if ((int) $e->getStatusCode() === 404) {
+                return null;
+            }
+            throw $e;
+        }
+
+        throw new \RuntimeException('A reasonable but unhandled response was received');
+    }
+
+    /**
      * @param array $params
      * @return Outbound\Fax[]
      * @throws \InvalidArgumentException
