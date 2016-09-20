@@ -26,6 +26,12 @@ class Inbound
      */
     protected $factory;
 
+    /**
+     * Inbound constructor.
+     *
+     * @param Client $client
+     * @param GenericFactory|null $factory
+     */
     public function __construct(Client $client, GenericFactory $factory = null)
     {
         $this->client = $client;
@@ -36,10 +42,11 @@ class Inbound
     }
 
     /**
-     * Retrieve a list of incoming faxes for the Client account
+     * Retrieve a list of incoming faxes for the Client account.
      *
      * @param array $query_params
      * @return Inbound\Fax[]
+     * @throws \RuntimeException
      */
     public function incoming($query_params = [])
     {
@@ -58,11 +65,12 @@ class Inbound
             return $result;
         }
 
-        //TODO: make this better
-        throw new \RuntimeException('unexpected API response');
+        throw new \RuntimeException('A reasonable but unhandled response was received');
     }
 
     /**
+     * Search for an incoming fax with the given id.
+     *
      * @param $id
      * @return \Interfax\Inbound\Fax|void
      * @throws RequestException

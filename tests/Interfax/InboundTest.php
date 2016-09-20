@@ -65,4 +65,5 @@ class InboundTest extends BaseTest
         $this->assertEquals('/inbound/faxes/12', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
+
 }

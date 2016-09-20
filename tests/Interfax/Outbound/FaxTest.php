@@ -215,5 +215,7 @@ class FaxTest extends BaseTest
         $transaction = $container[0];
         $this->assertEquals('GET', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes/42/image', $transaction['request']->getUri()->getPath());
+
+        fclose($resp_resource);
     }
 }

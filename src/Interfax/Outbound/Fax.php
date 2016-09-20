@@ -167,7 +167,7 @@ class Fax
     public function image()
     {
         $response = $this->client->get($this->resource_uri . '/image');
-        
+
         return $this->factory->instantiateClass('Interfax\Image', [$response]);
 
     }

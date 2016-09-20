@@ -13,6 +13,7 @@
 namespace Interfax\Inbound;
 
 use Interfax\BaseTest;
+use GuzzleHttp\Psr7\Response;
 
 class FaxTest extends BaseTest
 {
@@ -82,5 +83,30 @@ class FaxTest extends BaseTest
         $fax = new Fax($client, 854759652);
 
         $this->assertTrue($fax->resend('foo@bar.com'));
+    }
+
+    public function test_image()
+    {
+        $container = [];
+        $resp_resource = fopen(__DIR__ .'/../test.pdf', 'r');
+        $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
+        $client = $this->getClientWithResponses([
+            new Response(200, [], $stream)
+        ], $container);
+
+        $result_image = $this->getMockBuilder('Interfax\Image')->disableOriginalConstructor()->getMock();
+        $factory = $this->getFactory([
+//            $result_image
+            [$result_image, [$stream]]
+        ]);
+
+        $fax = new Fax($client, 854759652, [], $factory);
+        //$image = $fax->image();
+        $this->assertEquals($result_image, $fax->image());
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/inbound/faxes/854759652/image', $transaction['request']->getUri()->getPath());
+
+        fclose($resp_resource);
     }
 }

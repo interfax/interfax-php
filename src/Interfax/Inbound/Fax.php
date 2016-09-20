@@ -14,9 +14,15 @@ namespace Interfax\Inbound;
 
 use Interfax\Client;
 use Interfax\Exception\RequestException;
+use Interfax\GenericFactory;
 
 class Fax
 {
+    /**
+     * @var GenericFactory
+     */
+    private $factory;
+
     /**
      * @var Client
      */
@@ -24,14 +30,20 @@ class Fax
     protected $resource_id;
     protected $record;
 
-    public function __construct(Client $client, $id, $definition = [])
+    public function __construct(Client $client, $id, $definition = [], GenericFactory $factory = null)
     {
         $this->client = $client;
+
         $this->resource_uri = '/inbound/faxes/' . $id;
         $this->record = ['messageId' => $id];
         foreach ($definition as $k => $v) {
             $this->record[$k] = $v;
         }
+
+        if ($factory === null) {
+            $factory = new GenericFactory();
+        }
+        $this->factory = $factory;
     }
 
     /**
@@ -82,4 +94,14 @@ class Fax
         return true;
     }
 
+    /**
+     * @return object
+     * @throws RequestException
+     */
+    public function image()
+    {
+        $response = $this->client->get($this->resource_uri . '/image');
+
+        return $this->factory->instantiateClass('Interfax\Image', [$response]);
+    }
 }
