@@ -13,7 +13,6 @@
 
 namespace Interfax;
 
-use GuzzleHttp\Psr7\Request;
 use Interfax\Exception\RequestException;
 use Interfax\Outbound\Fax;
 
@@ -47,9 +46,11 @@ class Outbound
         $res = [];
         foreach ($definitions as $f_data) {
             if (array_key_exists('id', $f_data)) {
-                $res[] = $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, $f_data['id'], $f_data]);
-            }
-            else {
+                $res[] = $this->factory->instantiateClass(
+                    'Interfax\Outbound\Fax',
+                    [$this->client, $f_data['id'], $f_data]
+                );
+            } else {
                 throw new \InvalidArgumentException('No id attribute found in fax definition');
             }
         }
@@ -77,10 +78,9 @@ class Outbound
     }
 
     /**
-     * @param $params
+     * @param array $query_params
      * @return Outbound\Fax[]
-     * @throws \InvalidArgumentException
-     * @throws RequestException
+     * @internal param $params
      */
     public function recent($query_params = [])
     {

@@ -95,7 +95,7 @@ class Fax
     }
 
     /**
-     * @return object
+     * @return \Interfax\Image
      * @throws RequestException
      */
     public function image()

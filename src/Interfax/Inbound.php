@@ -74,6 +74,7 @@ class Inbound
      * @param $id
      * @return \Interfax\Inbound\Fax|void
      * @throws RequestException
+     * @throws \RuntimeException
      */
     public function find($id)
     {
@@ -82,5 +83,7 @@ class Inbound
         if (is_array($json)) {
             return $this->factory->instantiateClass('Interfax\Inbound\Fax', [$this->client, $id, $json]);
         }
+
+        throw new \RuntimeException('A reasonable but unhandled response was received');
     }
 }

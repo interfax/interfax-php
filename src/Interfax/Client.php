@@ -64,7 +64,10 @@ class Client
         $this->username = $username;
         $this->password = $password;
         if ($this->username === '' || $this->password === '') {
-            throw new \InvalidArgumentException('Username and Password must be provided or defined as environment variables ' . static::$ENV_USERNAME .' & ' . static::$ENV_PASSWORD);
+            throw new \InvalidArgumentException(
+                'Username and Password must be provided or defined as environment variables '
+                . static::$ENV_USERNAME .' & ' . static::$ENV_PASSWORD
+            );
         }
 
         // if its not injected, we instantiate directly
@@ -140,12 +143,12 @@ class Client
     {
         $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
         try {
-            return $this->parseResponse($this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params)));
-        }
-        catch (\GuzzleHttp\Exception\RequestException $e) {
+            return $this->parseResponse(
+                $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))
+            );
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
             throw RequestException::create('Problem with POST request', $e);
         }
-
     }
 
     /**
@@ -163,11 +166,9 @@ class Client
         try {
             $response = $this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params));
             return $this->parseResponse($response);
-        }
-        catch (\GuzzleHttp\Exception\RequestException $e) {
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
             throw RequestException::create('Problem with GET request', $e);
         }
-
     }
 
     /**
@@ -187,9 +188,12 @@ class Client
             } else {
                 return $response->getBody();
             }
-        }
-        else {
-            throw new RequestException('Unexpected response code', RequestException::$UNEXPECTED_RESPONSE_CODE, $response->getStatusCode());
+        } else {
+            throw new RequestException(
+                'Unexpected response code',
+                RequestException::$UNEXPECTED_RESPONSE_CODE,
+                $response->getStatusCode()
+            );
         }
     }
 

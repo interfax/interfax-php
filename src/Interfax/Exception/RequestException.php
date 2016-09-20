@@ -16,7 +16,8 @@ namespace Interfax\Exception;
 use \GuzzleHttp\Exception\RequestException as GuzzleException;
 
 /**
- * {@inheritDoc}
+ * Class RequestException
+ * @package Interfax\Exception
  */
 class RequestException extends \RuntimeException
 {
@@ -32,8 +33,13 @@ class RequestException extends \RuntimeException
      * @param GuzzleException $request_exception
      * @param \Exception|null $previous
      */
-    public function __construct($message, $code, $http_status, GuzzleException $request_exception = null, \Exception $previous = null)
-    {
+    public function __construct(
+        $message,
+        $code,
+        $http_status,
+        GuzzleException $request_exception = null,
+        \Exception $previous = null
+    ) {
         $this->http_status = $http_status;
         $this->request_exception = $request_exception;
 

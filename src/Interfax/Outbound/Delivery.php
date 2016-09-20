@@ -12,10 +12,11 @@
 
 
 namespace Interfax\Outbound;
+
+use Interfax\Client;
 use Interfax\Exception\RequestException;
 use \Interfax\File;
 use Interfax\GenericFactory;
-
 
 class Delivery
 {
@@ -38,7 +39,7 @@ class Delivery
      * @param GenericFactory $factory
      * @throws \InvalidArgumentException
      */
-    public function __construct(\Interfax\Client $client, $params = [], GenericFactory $factory = null)
+    public function __construct(Client $client, $params = [], GenericFactory $factory = null)
     {
         $this->client = $client;
 
@@ -88,8 +89,7 @@ class Delivery
                 if (count($f) === 2) {
                     $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f[0], $f[1]]);
                 }
-            }
-            else {
+            } else {
                 $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f]);
             }
         }

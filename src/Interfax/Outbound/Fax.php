@@ -18,7 +18,6 @@ use Interfax\Exception\RequestException;
 use Interfax\GenericFactory;
 use Interfax\Image;
 
-
 class Fax
 {
     /**
@@ -75,7 +74,7 @@ class Fax
      * the status (unless $reload is false)
      *
      * @TODO: move the update process?
-     * 
+     *
      * @param boolean $reload
      * @return int
      */
@@ -169,6 +168,5 @@ class Fax
         $response = $this->client->get($this->resource_uri . '/image');
 
         return $this->factory->instantiateClass('Interfax\Image', [$response]);
-
     }
 }

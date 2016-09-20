@@ -27,7 +27,9 @@ class File
     public function __construct($location, $params = [])
     {
         if (!file_exists($location)) {
-            throw new \InvalidArgumentException($location . ' not found. File must exists on filesystem to construct ' . __CLASS__);
+            throw new \InvalidArgumentException(
+                $location . ' not found. File must exists on filesystem to construct ' . __CLASS__
+            );
         }
 
         if (array_key_exists('mime_type', $params)) {
@@ -85,5 +87,4 @@ class File
     {
         return $this->body;
     }
-
 }

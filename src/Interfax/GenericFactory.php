@@ -21,8 +21,7 @@ class GenericFactory
             $reflect = new \ReflectionClass($classname);
 
             return $reflect->newInstanceArgs($args);
-        }
-        else {
+        } else {
             return new $classname();
         }
     }
