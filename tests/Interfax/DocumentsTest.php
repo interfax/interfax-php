@@ -58,4 +58,48 @@ class DocumentsTest extends BaseTest
         $this->assertEquals('/outbound/documents', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
+
+    public function test_create_no_params()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
+        ], $container);
+
+        $document = $this->getMockBuilder('Interfax\Document')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factory = $this->getFactory([[$document, [$client, 21, ['id' => 21, 'size' => '200', 'name' => 'test.pdf']]]]);
+
+        $documents = new Documents($client, $factory);
+
+        $this->assertEquals($document, $documents->create('test.pdf', 200));
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/documents', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('name=test.pdf&size=200', $transaction['request']->getUri()->getQuery());
+    }
+
+    public function test_create_with_params()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
+        ], $container);
+
+        $document = $this->getMockBuilder('Interfax\Document')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factory = $this->getFactory([[$document, [$client, 21, ['id' => 21, 'size' => '200', 'name' => 'test.pdf', 'foo' => 'bar']]]]);
+
+        $documents = new Documents($client, $factory);
+
+        $this->assertEquals($document, $documents->create('test.pdf', 200, ['foo' => 'bar']));
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/documents', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('foo=bar&name=test.pdf&size=200', $transaction['request']->getUri()->getQuery());
+    }
 }

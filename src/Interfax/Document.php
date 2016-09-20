@@ -14,5 +14,5 @@ namespace Interfax;
 
 class Document extends Resource
 {
-
+    protected static $resource_uri_stem = '/outbound/documents/';
 }

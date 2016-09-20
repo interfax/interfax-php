@@ -33,6 +33,26 @@ class Documents
         $this->factory = $factory;
     }
 
+    public function create($filename, $size, $params = [])
+    {
+        $all_params = array_merge($params, [
+            'name' => $filename,
+            'size' => $size
+        ]);
+
+        $location = $this->client->post('/outbound/documents', ['query' => $all_params]);
+
+        $path = parse_url($location, PHP_URL_PATH);
+        $bits = explode('/', $path);
+        $id = array_pop($bits);
+        $all_params['id'] = $id;
+        // spoof the attributes for the Document object from the given parameters
+        return $this->factory->instantiateClass('Interfax\Document', [$this->client, $id, $all_params]);
+    }
+
+    /**
+     * @return array
+     */
     public function available()
     {
         $response = $this->client->get('/outbound/documents');
