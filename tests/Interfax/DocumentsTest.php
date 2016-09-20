@@ -18,6 +18,7 @@ class DocumentsTest extends BaseTest
 {
     public function test_available()
     {
+        // sample taken from docs
         $response = [
             [
                 'userId' => 'nadya',
@@ -45,7 +46,8 @@ class DocumentsTest extends BaseTest
             new Response(200, ['Content-Type' => 'text/json'], json_encode($response))
         ], $container);
 
-        $factory_returns = [$this->getMock('Interfax\Document'), $this->getMock('Interfax\Document')];
+        $factory_returns = [
+            $this->getMockBuilder('Interfax\Document')->disableOriginalConstructor()->getMock(), $this->getMockBuilder('Interfax\Document')->disableOriginalConstructor()->getMock()];
         $factory = $this->getFactory($factory_returns);
 
         $documents = new Documents($client, $factory);

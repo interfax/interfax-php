@@ -177,6 +177,13 @@ class ClientTest extends BaseTest
         $this->assertInstanceOf('Interfax\Inbound', $client->inbound);
     }
 
+    public function test_documents_property()
+    {
+        $client = $this->getClient();
+
+        $this->assertInstanceOf('Interfax\Documents', $client->documents);
+    }
+
     public function test_boolean_parsing_for_query_string()
     {
         $mock = new MockHandler([

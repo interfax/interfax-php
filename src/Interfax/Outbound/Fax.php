@@ -17,46 +17,11 @@ use Interfax\Client;
 use Interfax\Exception\RequestException;
 use Interfax\GenericFactory;
 use Interfax\Image;
+use Interfax\Resource;
 
-class Fax
+class Fax extends Resource
 {
-    /**
-     * @var GenericFactory
-     */
-    private $factory;
-    /**
-     * @var \Interfax\Client;
-     */
-    protected $client;
-
-    protected $status;
-    protected $resource_uri;
-    protected $record;
-
-    /**
-     * Fax constructor.
-     *
-     * @param Client $client
-     * @param integer $id
-     * @param array $definition
-     * @param GenericFactory $factory
-     * @throws \InvalidArgumentException
-     */
-    public function __construct(Client $client, $id, $definition = [], GenericFactory $factory = null)
-    {
-        $this->client = $client;
-        $this->resource_uri = '/outbound/faxes/' . $id;
-        $this->record = ['id' => $id];
-        foreach ($definition as $k => $v) {
-            $this->record[$k] = $v;
-        }
-
-        if ($factory === null) {
-            $factory = new GenericFactory();
-        }
-
-        $this->factory = $factory;
-    }
+    protected static $resource_uri_stem = '/outbound/faxes/';
 
     /**
      * Request the details of this Fax from the api and update the record structure accordingly
@@ -84,7 +49,12 @@ class Fax
             $this->updateRecord();
         }
 
-        return $this->status;
+        try {
+            return $this->status;
+        } catch (\OutOfBoundsException $e) {
+            // status not set
+            return null;
+        }
     }
 
     /**

@@ -33,6 +33,10 @@ class Client
      * @var Inbound
      */
     protected $inbound;
+    /**
+     * @var Documents
+     */
+    protected $documents;
 
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
@@ -78,9 +82,10 @@ class Client
         $this->factory = $factory;
     }
 
-    private $cached_accessible = [
+    private static $cached_accessible = [
         'outbound' => 'Interfax\Outbound',
-        'inbound' => 'Interfax\Inbound'
+        'inbound' => 'Interfax\Inbound',
+        'documents' => 'Interfax\Documents'
     ];
 
     /**
@@ -91,9 +96,9 @@ class Client
      */
     public function __get($name)
     {
-        if (in_array($name, array_keys($this->cached_accessible))) {
+        if (in_array($name, array_keys(static::$cached_accessible))) {
             if (!$this->$name) {
-                $this->$name = $this->factory->instantiateClass($this->cached_accessible[$name], [$this]);
+                $this->$name = $this->factory->instantiateClass(static::$cached_accessible[$name], [$this]);
             }
             return $this->$name;
         }

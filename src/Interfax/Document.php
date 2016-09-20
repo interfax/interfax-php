@@ -12,15 +12,7 @@
  */
 namespace Interfax;
 
-class Document
+class Document extends Resource
 {
-    /**
-     * @var Client
-     */
-    protected $client;
 
-    public function __construct(Client $client, $id, $definition = [])
-    {
-        $this->client = $client;
-    }
 }
