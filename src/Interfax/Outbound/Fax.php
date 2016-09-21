@@ -24,20 +24,8 @@ class Fax extends Resource
     protected static $resource_uri_stem = '/outbound/faxes/';
 
     /**
-     * Request the details of this Fax from the api and update the record structure accordingly
-     * @throws RequestException
-     */
-    protected function updateRecord()
-    {
-        $response = $this->client->get($this->resource_uri);
-        $this->record = $response;
-        $this->status = (integer) $this->record['status'];
-    }
-
-    /**
-     * If the current status of the fax is not OK (Fax succesfully sent), the status will be refreshed before returning
-     * the status (unless $reload is false)
-     *
+     * Get current status. If $reload is false, current status without checking with the API endpoint, otherwise
+     * the data is refreshed.
      * @TODO: move the update process?
      *
      * @param boolean $reload
@@ -63,27 +51,6 @@ class Fax extends Resource
     public function getLocation()
     {
         return $this->resource_uri;
-    }
-
-    /**
-     * @param $name
-     * @return mixed|null
-     * @throws \OutOfBoundsException
-     */
-    public function __get($name)
-    {
-        if (array_key_exists($name, $this->record)) {
-            return $this->record[$name];
-        }
-        throw new \OutOfBoundsException($name . ' is not a property of ' . __CLASS__);
-    }
-
-    /**
-     * @return array
-     */
-    public function attributes()
-    {
-        return $this->record;
     }
 
     /**

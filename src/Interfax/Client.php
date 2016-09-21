@@ -136,7 +136,7 @@ class Client
     }
 
     /**
-     * POST request
+     * POST request.
      *
      * @param $uri
      * @param array $params

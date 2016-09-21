@@ -12,6 +12,8 @@
  */
 namespace Interfax;
 
+use Interfax\Exception\RequestException;
+
 /**
  * Class Resource
  *
@@ -72,5 +74,36 @@ abstract class Resource
             $factory = new GenericFactory();
         }
         $this->factory = $factory;
+    }
+
+    /**
+     * Request the details of this Fax from the api and update the record structure accordingly
+     * @throws RequestException
+     */
+    protected function updateRecord()
+    {
+        $response = $this->client->get($this->resource_uri);
+        $this->record = $response;
+    }
+
+    /**
+     * @param $name
+     * @return mixed|null
+     * @throws \OutOfBoundsException
+     */
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->record)) {
+            return $this->record[$name];
+        }
+        throw new \OutOfBoundsException($name . ' is not a property of ' . __CLASS__);
+    }
+
+    /**
+     * @return array
+     */
+    public function attributes()
+    {
+        return $this->record;
     }
 }
