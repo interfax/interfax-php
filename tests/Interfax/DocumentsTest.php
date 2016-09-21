@@ -59,6 +59,22 @@ class DocumentsTest extends BaseTest
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
 
+    public function test_available_with_params()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(200, ['Content-Type' => 'text/json'], '[]')
+        ], $container);
+
+        $documents = new Documents($client);
+
+        $this->assertEquals([], $documents->available(['limit' => 20, 'foo' => 'bar']));
+        $transaction = $container[0];
+        $this->assertEquals('GET', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/documents', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('limit=20&foo=bar', $transaction['request']->getUri()->getQuery());
+    }
+
     public function test_create_no_params()
     {
         $container = [];

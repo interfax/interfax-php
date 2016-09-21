@@ -33,10 +33,16 @@ class Documents
         $this->factory = $factory;
     }
 
-    public function create($filename, $size, $params = [])
+    /**
+     * @param $document_name - name used when defining document on the API
+     * @param $size - in bytes
+     * @param array $params - additional parameters to be used when creating the document on the API
+     * @return object
+     */
+    public function create($document_name, $size, $params = [])
     {
         $all_params = array_merge($params, [
-            'name' => $filename,
+            'name' => $document_name,
             'size' => $size
         ]);
 
@@ -51,11 +57,18 @@ class Documents
     }
 
     /**
+     * Get list of the available documents previously uploaded.
+     *
      * @return array
      */
-    public function available()
+    public function available($query_params = [])
     {
-        $response = $this->client->get('/outbound/documents');
+        $params = [];
+        if (count($query_params)) {
+            $params = ['query' => $query_params];
+        }
+
+        $response = $this->client->get('/outbound/documents', $params);
 
         if (is_array($response)) {
             $result = [];
