@@ -185,7 +185,7 @@ class Client
      */
     protected function parseResponse(ResponseInterface $response)
     {
-        if (in_array($response->getStatusCode(), [200, 201], true)) {
+        if (in_array($response->getStatusCode(), [200, 201, 202], true)) {
             if ($location = $response->getHeaderLine('Location')) {
                 return $location;
             } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
