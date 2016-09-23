@@ -68,8 +68,7 @@ class File
 
         if (array_key_exists('chunk_size', $params)) {
             $this->chunk_size = $params['chunk_size'];
-        }
-        else {
+        } else {
             $this->chunk_size = static::$DEFAULT_CHUNK_SIZE;
         }
     }
@@ -103,8 +102,7 @@ class File
 
         if (filesize($location) > $this->chunk_size) {
             $this->initialiseFromLargeFile($location);
-        }
-        else {
+        } else {
             if (!$this->mime_type) {
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $this->setMimeType(finfo_file($finfo, $location));
