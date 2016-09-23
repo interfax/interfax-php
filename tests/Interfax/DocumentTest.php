@@ -39,7 +39,7 @@ class DocumentTest extends BaseTest
         $this->assertEquals('bytes=0-300',$transaction['request']->getHeaderLine('Range'));
     }
 
-    public function test_status()
+    public function test_refresh()
     {
         $response = [
             'userId' => 'nadya',
@@ -60,9 +60,9 @@ class DocumentTest extends BaseTest
         ], $container);
 
         $document = new Document($client, '89a48657279d45429c646029bd9227e6');
-        $this->assertNull($document->getStatus(false));
+        $this->assertNull($document->status);
         $this->assertCount(0, $container);
-        $this->assertEquals('Created', $document->getStatus());
+        $this->assertInstanceOf('Interfax\Document', $document->refresh());
         $this->assertCount(1, $container);
         $transaction = $container[0];
         $this->assertEquals('GET', $transaction['request']->getMethod());

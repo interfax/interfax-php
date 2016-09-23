@@ -36,27 +36,4 @@ class Document extends Resource
 
         return true;
     }
-
-    /**
-     * Get current status. If $reload is false, current status without checking with the API endpoint, otherwise
-     * the data is refreshed.
-     * @TODO: move the update process?
-     *
-     * @param boolean $reload
-     * @return int
-     */
-    public function getStatus($reload = true)
-    {
-        if ($reload) {
-            $this->updateRecord();
-        }
-
-        try {
-            return $this->status;
-        } catch (\OutOfBoundsException $e) {
-            // status not set
-            return null;
-        }
-    }
-
 }

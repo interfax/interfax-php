@@ -29,7 +29,7 @@ class FaxTest extends BaseTest
         $this->assertInstanceOf('Interfax\Outbound\Fax', $fax);
     }
 
-    public function test_can_reload_the_status_of_the_fax()
+    public function test_refresh()
     {
         $client = $this->getMockBuilder('Interfax\Client')
             ->disableOriginalConstructor()
@@ -45,8 +45,8 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 854759652);
 
-        $this->assertNull($fax->getStatus(false));
-        $this->assertEquals(0, $fax->getStatus());
+        $this->assertNull($fax->status);
+        $this->assertEquals(0, $fax->refresh()->status);
     }
 
     public function test_getter_method_for_record_details()
@@ -69,14 +69,20 @@ class FaxTest extends BaseTest
             ->will($this->returnValue($response));
 
         $fax = new Fax($client, 82342453);
-        $this->assertEquals(-2, $fax->getStatus());
+        $this->assertNull($fax->status);
+        foreach ($response as $k => $v) {
+            if ($k != 'id') {
+                $this->assertNull($fax->$k);
+            }
+        }
+
+        $this->assertInstanceOf('Interfax\Outbound\Fax', $fax->refresh());
 
         foreach ($response as $k => $v) {
             $this->assertEquals($v, $fax->$k);
         }
 
-        $this->setExpectedException('OutOfBoundsException');
-        $missing = $fax->undefined_property;
+        $this->assertNull($fax->undefined_property);
     }
 
     public function test_resend()

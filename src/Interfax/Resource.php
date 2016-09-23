@@ -77,26 +77,15 @@ abstract class Resource
     }
 
     /**
-     * Request the details of this Fax from the api and update the record structure accordingly
-     * @throws RequestException
-     */
-    protected function updateRecord()
-    {
-        $response = $this->client->get($this->resource_uri);
-        $this->record = $response;
-    }
-
-    /**
      * @param $name
      * @return mixed|null
-     * @throws \OutOfBoundsException
      */
     public function __get($name)
     {
         if (array_key_exists($name, $this->record)) {
             return $this->record[$name];
         }
-        throw new \OutOfBoundsException($name . ' is not a property of ' . __CLASS__);
+        return null;
     }
 
     /**
@@ -105,5 +94,16 @@ abstract class Resource
     public function attributes()
     {
         return $this->record;
+    }
+
+    /**
+     * @return self
+     * @throws RequestException
+     */
+    public function refresh()
+    {
+        $response = $this->client->get($this->resource_uri);
+        $this->record = $response;
+        return $this;
     }
 }

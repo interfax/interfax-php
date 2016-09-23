@@ -139,18 +139,16 @@ The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is 
 
 It offers several methods to manage or retrieve information about the fax.
 
-### Status
+### Refreshing the Fax Details
 
 ```php
 // Interfax\Outbound\Fax
 $fax = $interfax->deliver(['faxNumber' => '+11111111112', 'file' => 'folder/file.pdf']);
-// get the status without refreshing against the API
-$status = $fax->getStatus(false);
-// get the status with a refresh against the API
-$status = $fax->getStatus();
+echo $fax->status;
+// -2
+echo $fax->refresh()->status;
+// 0
 ```
-
-The values for the different status codes are [Documented here](https://www.interfax.net/en/help/error_codes)
 
 ### Cancel
 
@@ -217,6 +215,8 @@ For convenience, a hash array of the properties can be retrieved
 ```php
 $fax->attributes();
 ```
+
+Status should always be available. The values of the status codes are [Documented here](https://www.interfax.net/en/help/error_codes) 
 
 ## Inbound
 
@@ -299,6 +299,21 @@ $fax->markUnread();
 
 ```php
 $fax->resend();
+```
+
+### Properties
+
+As with the outbound fax, the properties of the fax are available as a single hash array:
+
+```php
+$fax->attributes()
+// ['k' => 'v' ...]
+```
+The properties can be refreshed:
+
+```php
+echo $fax->refresh()->status;
+// 32
 ```
 
 ## Query parameters
