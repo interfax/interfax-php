@@ -36,4 +36,11 @@ class Document extends Resource
 
         return true;
     }
+
+    public function cancel()
+    {
+        $this->client->delete($this->resource_uri);
+        $this->record = [];
+        return true;
+    }
 }

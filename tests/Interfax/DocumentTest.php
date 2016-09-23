@@ -70,4 +70,32 @@ class DocumentTest extends BaseTest
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
         $this->assertEquals($response,$document->attributes());
     }
+
+    public function test_cancel()
+    {
+        $struct = $response = [
+            'userId' => 'nadya',
+            'fileName' => 'sampledoc.pdf',
+            'fileSize' => 82318,
+            'uploaded' => 0,
+            'uri' => 'https:/rest.interfax.net/outbound/documents/123124124',
+            'creationTime' => '2012-06-23T17:49:25',
+            'lastusageTime' => '2012-06-23T17:49:25',
+            'status' => 'Created',
+            'disposition' => 'SingleUse',
+            'sharing' => 'Private'
+        ];
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(200, [], '')
+        ], $container);
+
+        $document = new Document($client, '123124124', $struct);
+        $this->assertTrue($document->cancel());
+        $this->assertCount(0, $document->attributes());
+        $transaction = $container[0];
+        $this->assertEquals('DELETE', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/documents/123124124', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('', $transaction['request']->getUri()->getQuery());
+    }
 }
