@@ -56,7 +56,7 @@ class FileTest extends BaseTest
 
         $file = new File($file_client, __DIR__ . '/test.pdf', ['chunk_size' => 5000]);
         // no base uri on guzzle client
-        $this->assertEquals(['Location' => '/outbound/documents/3425'], $file->getHeader());
+        $this->assertEquals(['Content-Location' => '/outbound/documents/3425'], $file->getHeader());
 
     }
 
@@ -75,8 +75,8 @@ class FileTest extends BaseTest
     {
         $file = new File($this->getClientWithFactory(), 'https://foo.com/bar.pdf');
         $header = $file->getHeader();
-        $this->assertArrayHasKey('Location', $header);
-        $this->assertEquals('https://foo.com/bar.pdf', $header['Location']);
+        $this->assertArrayHasKey('Content-Location', $header);
+        $this->assertEquals('https://foo.com/bar.pdf', $header['Content-Location']);
 
     }
 

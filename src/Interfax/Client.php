@@ -51,6 +51,11 @@ class Client
     protected $http;
 
     /**
+     * @var bool
+     */
+    private $debug = false;
+
+    /**
      * Client constructor.
      * @param array $params
      * @param GenericFactory|null $factory - allows for testing injection with abstract class instantiation
@@ -64,6 +69,10 @@ class Client
 
         $username = array_key_exists('username', $params) ? $params['username'] : getenv(static::$ENV_USERNAME);
         $password = array_key_exists('password', $params) ? $params['password'] : getenv(static::$ENV_PASSWORD);
+
+        if (array_key_exists('debug', $params)) {
+            $this->debug = $params['debug'];
+        }
         
         $this->username = $username;
         $this->password = $password;
@@ -110,9 +119,13 @@ class Client
     protected function getHttpClient()
     {
         if (!$this->http) {
+            $config = ['base_uri' => static::$DEFAULT_BASE_URI];
+            if ($this->debug) {
+                $config['debug'] = true;
+            }
             $this->http = $this->factory->instantiateClass(
                 'GuzzleHttp\Client',
-                [['base_uri' => static::$DEFAULT_BASE_URI]]
+                [$config]
             );
         }
 

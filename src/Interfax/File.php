@@ -138,8 +138,9 @@ class File
     protected function initialiseFromUri($location)
     {
         $this->headers = [
-            'Location' => $location
+            'Content-Location' => $location
         ];
+        $this->body = '';
     }
 
     /**
