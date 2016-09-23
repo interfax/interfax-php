@@ -36,7 +36,8 @@ class Image
     }
 
     /**
-     * Note a return of false does not indicate that a file has not been created or written to, just that it failed at some point.
+     * Note a return of false does not indicate that a file has not been created or written to,
+     * just that it failed at some point.
      *
      * @param $path
      * @return bool
@@ -55,7 +56,7 @@ class Image
                 // TODO consider chunking size configuration
                 fwrite($handle, $this->stream->read(1024 * 1024));
             }
-        } catch(\RuntimeException $e) {
+        } catch (\RuntimeException $e) {
             // try to at least tidy up the resource
             fclose($handle);
             throw $e;

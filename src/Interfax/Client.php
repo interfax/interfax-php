@@ -148,8 +148,7 @@ class Client
     {
         if ($multipart && count($multipart)) {
             $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
-        }
-        else {
+        } else {
             $params = array_merge($params, ['auth' => [$this->username, $this->password], 'debug' => true]);
         }
 

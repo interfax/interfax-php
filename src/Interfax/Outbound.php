@@ -117,8 +117,10 @@ class Outbound
             $response = $this->client->get('/outbound/faxes/' . $id);
 
             if (is_array($response) && array_key_exists('id', $response)) {
-                return $this->factory->instantiateClass('Interfax\Outbound\Fax',
-                    [$this->client, $response['id'], $response]);
+                return $this->factory->instantiateClass(
+                    'Interfax\Outbound\Fax',
+                    [$this->client, $response['id'], $response]
+                );
             }
         } catch (\RuntimeException $e) {
             if ((int) $e->getStatusCode() === 404) {

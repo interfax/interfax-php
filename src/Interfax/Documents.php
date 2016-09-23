@@ -81,5 +81,4 @@ class Documents
 
         throw new \RuntimeException('A reasonable but unhandled response was received');
     }
-
 }
