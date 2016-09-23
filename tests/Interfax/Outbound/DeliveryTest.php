@@ -17,6 +17,7 @@ namespace Interfax\Outbound;
 use Interfax\BaseTest;
 use Interfax\Client;
 use GuzzleHttp\Psr7\Response;
+use Interfax\File;
 
 class DeliveryTest extends BaseTest
 {
@@ -58,6 +59,38 @@ class DeliveryTest extends BaseTest
     public function test_it_can_be_constructed_with_a_uri()
     {
         $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => 'https://test.com/foo/bar']));
+    }
+
+    public function test_it_can_be_constructed_with_an_Interfax_File()
+    {
+        $client = $this->client;
+        $file = new File($client, __DIR__ . '/../test.pdf');
+        $delivery = new Delivery($this->client, ['faxNumber' => '12345', 'file' => $file]);
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', $delivery);
+        $r = new \ReflectionClass($delivery);
+        $rp = $r->getProperty('files');
+        $rp->setAccessible(true);
+        $this->assertEquals([$file], $rp->getValue($delivery));
+    }
+
+    public function test_it_can_be_constructed_with_an_Interfax_Document()
+    {
+        $file = $this->getMockBuilder('Interfax\File')->disableOriginalConstructor()->getMock();
+        $factory = $this->getFactory([
+            [$file, [$this->client, 'http://test.com/foo']]
+        ]);
+
+        $document = $this->getMockBuilder('Interfax\Document')
+            ->disableOriginalConstructor()
+            ->setMethods(['getHeaderLocation'])
+            ->getMock();
+
+        $document->expects($this->once())
+            ->method('getHeaderLocation')
+            ->will($this->returnValue('http://test.com/foo'));
+
+        $delivery = new Delivery($this->client, ['faxNumber' => '12345', 'file' => $document], $factory);
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', $delivery);
     }
 
     public function test_it_stores_provided_params_for_the_query_string()

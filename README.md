@@ -73,8 +73,8 @@ Each ```file``` entry can be:
 
 * local path - if the file is larger than the allowed limit, it will be automatically uploaded as an ```Interfax\Document```
 * uri (from an ```Interfax\Document```)
-* ```Interfax\File``` __TODO__
-* ```Interfax\Document``` __TODO__
+* ```Interfax\File``` 
+* ```Interfax\Document``` 
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2918)
 

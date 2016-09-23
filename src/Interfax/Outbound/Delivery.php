@@ -88,10 +88,13 @@ class Delivery
         // create file objects where necessary
         foreach ($files as $f) {
             if (is_object($f)) {
-                if (get_class($f) === 'Interfax\File') {
+                $cls = get_class($f);
+                if (is_a($f, 'Interfax\File')) {
                     $this->files[] = $f;
+                } elseif (is_a($f, 'Interfax\Document')) {
+                    $this->files[] = $this->factory->instantiateClass('Interfax\File', [$this->client, $f->getHeaderLocation()]);
                 } else {
-                    throw new \InvalidArgumentException('File objects must be Interfax\File objects for Delivery.');
+                    throw new \InvalidArgumentException('File objects must be Interfax\File or Interfax\Document objects for Delivery. not ' . $cls);
                 }
             } elseif (is_array($f)) {
                 $args = array_merge([$this->client], $f);
