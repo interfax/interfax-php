@@ -66,8 +66,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         return new Client(['username' => 'test_user', 'password' => 'test_password'], $factory);
     }
 
-    // wrapper to allow "simple" inspection of the requests sent to the API endpoints
-    protected function getClientWithResponses($responses = [], &$container)
+    protected function constructGuzzleWithResponses($responses = [], &$container)
     {
         $mock = new MockHandler($responses);
 
@@ -79,7 +78,13 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         $guzzle = new GuzzleClient(['handler' => $stack]);
 
-        $client = $this->getClientWithFactory([$guzzle]);
+        return $guzzle;
+    }
+
+    // wrapper to allow "simple" inspection of the requests sent to the API endpoints
+    protected function getClientWithResponses($responses = [], &$container)
+    {
+        $client = $this->getClientWithFactory([$this->constructGuzzleWithResponses($responses, $container)]);
 
         return $client;
     }

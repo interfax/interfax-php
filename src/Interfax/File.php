@@ -14,10 +14,21 @@ namespace Interfax;
 
 class File
 {
+    /**
+     * @var GenericFactory
+     */
+    private $factory;
+    /**
+     * @var Client
+     */
+    protected $client;
+
     protected $headers = [];
     protected $mime_type;
     protected $name;
     protected $body;
+    private $chunk_size;
+    protected static $DEFAULT_CHUNK_SIZE = 1048576; // 1024*1024
 
     /**
      * File constructor.
@@ -25,8 +36,15 @@ class File
      * @param array $params
      * @throws \InvalidArgumentException
      */
-    public function __construct($location, $params = [])
+    public function __construct(Client $client, $location, $params = [], GenericFactory $factory = null)
     {
+        $this->client = $client;
+        if ($factory === null) {
+            $factory = new GenericFactory();
+        }
+
+        $this->factory = $factory;
+
         if (preg_match('/^https?:\/\//', $location)) {
             $this->initialiseFromUri($location);
         } else {
@@ -46,6 +64,13 @@ class File
 
         if (array_key_exists('name', $params)) {
             $this->name = $params['name'];
+        }
+
+        if (array_key_exists('chunk_size', $params)) {
+            $this->chunk_size = $params['chunk_size'];
+        }
+        else {
+            $this->chunk_size = static::$DEFAULT_CHUNK_SIZE;
         }
     }
 
@@ -72,17 +97,46 @@ class File
             );
         }
 
-        if (!$this->mime_type) {
-            $finfo = finfo_open(FILEINFO_MIME_TYPE);
-            $this->setMimeType(finfo_file($finfo, $location));
-        }
-
         if (!$this->name) {
             $this->name = basename($location);
         }
-        $this->body = fopen($location, 'r');
+
+        if (filesize($location) > $this->chunk_size) {
+            $this->initialiseFromLargeFile($location);
+        }
+        else {
+            if (!$this->mime_type) {
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $this->setMimeType(finfo_file($finfo, $location));
+            }
+
+            $this->body = fopen($location, 'r');
+        }
     }
 
+    /**
+     * @param $location
+     */
+    protected function initialiseFromLargeFile($location)
+    {
+        $document = $this->client->documents->create($this->name, filesize($location));
+
+        $stream = fopen($location, 'rb');
+        $current = 0;
+        while (!feof($stream)) {
+            $chunk = fread($stream, $this->chunk_size);
+            $end = $current + strlen($chunk);
+            $document->upload($current, $end-1, $chunk);
+            $current = $end;
+        }
+        fclose($stream);
+
+        $this->initialiseFromUri($document->getHeaderLocation());
+    }
+
+    /**
+     * @param $location
+     */
     protected function initialiseFromUri($location)
     {
         $this->headers = [

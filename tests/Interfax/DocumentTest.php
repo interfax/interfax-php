@@ -98,4 +98,5 @@ class DocumentTest extends BaseTest
         $this->assertEquals('/outbound/documents/123124124', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
+
 }

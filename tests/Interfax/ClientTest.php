@@ -219,4 +219,11 @@ class ClientTest extends BaseTest
         $this->assertEquals('foo=TRUE&bar=FALSE', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
     }
+
+    public function test_getBaseUri()
+    {
+        $guzzle = new GuzzleClient(['base_uri' => 'http://test.foo.bar.com']);
+        $client = $this->getClientWithFactory([$guzzle]);
+        $this->assertEquals('http://test.foo.bar.com', $client->getBaseUri());
+    }
 }

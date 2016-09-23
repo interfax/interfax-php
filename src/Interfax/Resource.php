@@ -82,9 +82,14 @@ abstract class Resource
      */
     public function __get($name)
     {
+        if ($name === 'location') {
+            return $this->resource_uri;
+        }
+
         if (array_key_exists($name, $this->record)) {
             return $this->record[$name];
         }
+
         return null;
     }
 

@@ -16,10 +16,6 @@ namespace Interfax\Outbound;
 
 use Interfax\BaseTest;
 use Interfax\Client;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 
 class DeliveryTest extends BaseTest
@@ -31,19 +27,37 @@ class DeliveryTest extends BaseTest
         $this->client = new Client(['username' => 'test_user', 'password' => 'test_password']);
     }
 
-    public function test_it_cant_be_constructed_without_minimum_requirements()
+    public function test_it_cant_be_constructed_without_params()
     {
         $this->setExpectedException('InvalidArgumentException');
 
         $delivery = new Delivery($this->client);
+    }
+
+    public function test_it_cant_be_constructed_without_a_file()
+    {
 
         $this->setExpectedException('InvalidArgumentException');
 
         $delivery2 = new Delivery($this->client, ['faxNumber' => '12345']);
+    }
 
-        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => '/fake/file']));
+    public function test_it_can_be_constructed_with_a_file_path()
+    {
+        $file = $this->getMockBuilder('Interfax\File')->disableOriginalConstructor()->getMock();
 
-        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'files' => ['/fake/file']]));
+        $factory = $this->getFactory([
+            [$file, [$this->client, '/fake/file']],
+            [$file, [$this->client, '/fake/file2']]
+        ]);
+
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => '/fake/file'], $factory));
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'files' => ['/fake/file2']], $factory));
+    }
+
+    public function test_it_can_be_constructed_with_a_uri()
+    {
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => 'https://test.com/foo/bar']));
     }
 
     public function test_it_stores_provided_params_for_the_query_string()
@@ -97,7 +111,7 @@ class DeliveryTest extends BaseTest
             ->getMock();
 
         $factory = $this->getFactory([
-            [$file, ['fake/file']],
+            [$file, [$client, 'fake/file']],
             [$fax, [$client, 21]]
         ]);
 

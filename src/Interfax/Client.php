@@ -243,4 +243,9 @@ class Client
     {
         return $this->get('/accounts/self/ppcards/balance');
     }
+
+    public function getBaseUri()
+    {
+        return $this->getHttpClient()->getConfig('base_uri');
+    }
 }

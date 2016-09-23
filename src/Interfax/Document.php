@@ -38,10 +38,18 @@ class Document extends Resource
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function cancel()
     {
         $this->client->delete($this->resource_uri);
         $this->record = [];
         return true;
+    }
+
+    public function getHeaderLocation()
+    {
+        return $this->client->getBaseUri() . $this->resource_uri;
     }
 }

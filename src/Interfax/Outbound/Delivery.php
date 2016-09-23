@@ -94,10 +94,11 @@ class Delivery
                     throw new \InvalidArgumentException('File objects must be Interfax\File objects for Delivery.');
                 }
             } elseif (is_array($f)) {
-                $this->files[] = $this->factory->instantiateClass('Interfax\File', $f);
+                $args = array_merge([$this->client], $f);
+                $this->files[] = $this->factory->instantiateClass('Interfax\File', $args);
             } else {
                 // assumed to be a path
-                $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f]);
+                $this->files[] = $this->factory->instantiateClass('Interfax\File', [$this->client, $f]);
             }
         }
     }

@@ -13,7 +13,9 @@
 namespace Interfax;
 
 
-class FileTest extends \PHPUnit_Framework_TestCase
+use GuzzleHttp\Psr7\Response;
+
+class FileTest extends BaseTest
 {
     public function test_it_errors_for_invalid_path()
     {
@@ -26,23 +28,43 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('InvalidArgumentException');
 
-        $file = new File($missing_file_path);
+        $file = new File($this->getClientWithFactory(), $missing_file_path);
     }
 
     public function test_it_sets_values_from_valid_file()
     {
-        $file = new File(__DIR__ . '/test.pdf');
+        $file = new File($this->getClientWithFactory(), __DIR__ . '/test.pdf');
         $header = $file->getHeader();
         $this->assertArrayHasKey('Content-Type', $header);
         $this->assertEquals('application/pdf', $header['Content-Type']);
         $this->assertEquals('test.pdf', $file->getName());
     }
 
+    public function test_it_automatically_creates_document_for_large_files()
+    {
+        $container = [];
+
+        $documents_client = $this->getClientWithResponses([
+            new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
+            new Response(202),
+            new Response(200)
+        ], $container);
+
+        $file_client = $this->getClientWithFactory([
+            new Documents($documents_client)
+        ]);
+
+        $file = new File($file_client, __DIR__ . '/test.pdf', ['chunk_size' => 5000]);
+        // no base uri on guzzle client
+        $this->assertEquals(['Location' => '/outbound/documents/3425'], $file->getHeader());
+
+    }
+
     public function test_attribute_overrides()
     {
         // this is not a real world use case, but the principle here is to allow both attributes to be set by
         // the method call to ensure erroneous details can be altered correctly
-        $file = new File(__DIR__ . '/test.pdf', ['mime_type' => 'text/html', 'name' => 'foobar.html']);
+        $file = new File($this->getClientWithFactory(), __DIR__ . '/test.pdf', ['mime_type' => 'text/html', 'name' => 'foobar.html']);
         $header = $file->getHeader();
         $this->assertArrayHasKey('Content-Type', $header);
         $this->assertEquals('text/html', $header['Content-Type']);
@@ -51,7 +73,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function test_initialise_from_uri()
     {
-        $file = new File('https://foo.com/bar.pdf');
+        $file = new File($this->getClientWithFactory(), 'https://foo.com/bar.pdf');
         $header = $file->getHeader();
         $this->assertArrayHasKey('Location', $header);
         $this->assertEquals('https://foo.com/bar.pdf', $header['Location']);
