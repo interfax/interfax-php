@@ -14,6 +14,7 @@ namespace Interfax;
 
 class File
 {
+    protected $headers = [];
     protected $mime_type;
     protected $name;
     protected $body;
@@ -26,12 +27,19 @@ class File
      */
     public function __construct($location, $params = [])
     {
-        if (!file_exists($location)) {
-            throw new \InvalidArgumentException(
-                $location . ' not found. File must exists on filesystem to construct ' . __CLASS__
-            );
+        if (preg_match('/^https?:\/\//', $location)) {
+            $this->initialiseFromUri($location);
+        } else {
+            $this->initialiseParams($params);
+            $this->initialiseFromPath($location);
         }
+    }
 
+    /**
+     * @param array $params
+     */
+    protected function initialiseParams($params = [])
+    {
         if (array_key_exists('mime_type', $params)) {
             $this->setMimeType($params['mime_type']);
         }
@@ -39,20 +47,31 @@ class File
         if (array_key_exists('name', $params)) {
             $this->name = $params['name'];
         }
-
-        $this->initialiseFromPath($location);
     }
 
+    /**
+     * @param $mime_type
+     */
     public function setMimeType($mime_type)
     {
+        $this->headers = [
+            'Content-Type' => $mime_type
+        ];
         $this->mime_type = $mime_type;
     }
 
     /**
      * @param $location
+     * @throws \InvalidArgumentException
      */
     protected function initialiseFromPath($location)
     {
+        if (!file_exists($location)) {
+            throw new \InvalidArgumentException(
+                $location . ' not found. File must exists on filesystem to construct ' . __CLASS__
+            );
+        }
+
         if (!$this->mime_type) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $this->setMimeType(finfo_file($finfo, $location));
@@ -64,12 +83,19 @@ class File
         $this->body = fopen($location, 'r');
     }
 
+    protected function initialiseFromUri($location)
+    {
+        $this->headers = [
+            'Location' => $location
+        ];
+    }
+
     /**
      * @return string
      */
     public function getHeader()
     {
-        return ['Content-Type' => $this->mime_type];
+        return $this->headers;
     }
 
     /**

@@ -49,4 +49,13 @@ class FileTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foobar.html', $file->getName());
     }
 
+    public function test_initialise_from_uri()
+    {
+        $file = new File('https://foo.com/bar.pdf');
+        $header = $file->getHeader();
+        $this->assertArrayHasKey('Location', $header);
+        $this->assertEquals('https://foo.com/bar.pdf', $header['Location']);
+
+    }
+
 }

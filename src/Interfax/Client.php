@@ -152,7 +152,7 @@ class Client
         else {
             $params = array_merge($params, ['auth' => [$this->username, $this->password], 'debug' => true]);
         }
-        
+
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))
