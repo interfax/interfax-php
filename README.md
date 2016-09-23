@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.com/splatEric/interfax-php.svg?token=zvHvLCWt5Q8cuwRHBcBK&branch=master)](https://travis-ci.com/splatEric/interfax-php)
 
-[Installation](#installation) | [Getting Started](#getting-started)
+Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/dev) REST API.
+
+[Installation](#installation) | [Getting Started](#getting-started) | [Contributing](#contributing) | [Usage](#usage) | [License](#license)
 
 Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/dev) REST API.
 
@@ -37,7 +39,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client) [Account Info](#account-info) [Outbound](#outbound) [Inbound](#inbound) [Query Parameters](#query-parameters) [Exceptions](#exceptions)
+[Client](#client) | [Account Info](#account-info) | [Outbound](#outbound) | [Inbound](#inbound) | [Outbound Fax](#outbound-fax) | [Inbound Fax](#inbound-fax) | [Large Files](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
 
 ## Client
 
@@ -64,6 +66,15 @@ $fax = $client->deliver([
     'file' => __DIR__ . '/../tests/Interfax/test.pdf'
 ]);
 ```
+
+The ```deliver``` method will take either a ```file``` or ```files``` argument. The ```files``` is an array of file values.
+
+Each ```file``` entry can be:
+
+* local path - if the file is larger than the allowed limit, it will be automatically uploaded as an ```Interfax\Document```
+* uri (from an ```Interfax\Document```)
+* ```Interfax\File``` __TODO__
+* ```Interfax\Document``` __TODO__
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2918)
 
@@ -407,3 +418,15 @@ try {
     // The underlying Guzzle exception that was caught by the Interfax Client.
 }
 ```
+
+## Contributing
+
+ 1. **Fork** the repo on GitHub
+ 2. **Clone** the project to your own machine
+ 3. **Commit** changes to your own branch
+ 4. **Push** your work back up to your fork
+ 5. Submit a **Pull request** so that we can review your changes
+
+## License
+
+This library is released under the [MIT License](LICENSE).
