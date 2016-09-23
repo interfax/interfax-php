@@ -177,6 +177,22 @@ class Client
     }
 
     /**
+     * @param $uri
+     * @return int - status code of the API request
+     *
+     */
+    public function delete($uri)
+    {
+        $params = ['auth' => [$this->username, $this->password]];
+        try {
+            $response = $this->getHttpClient()->request('DELETE', $uri, $params);
+            return $response->getStatusCode();
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            throw RequestException::create('Problem with DELETE request', $e);
+        }
+    }
+
+    /**
      * Parses the responses in a consistent manner for handling by various classes.
      *
      * @param ResponseInterface $response

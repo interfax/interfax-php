@@ -87,7 +87,7 @@ class ClientTest extends BaseTest
         $response = $client->post('test/uri',['query' => ['foo' => 'bar']], [['name' => 'doc1', 'headers' => ['X-Bar' => 'FOO'], 'contents' => 'testString']]);
 
         $this->assertEquals('http://myfax.resource.uri', $response);
-        $this->assertEquals(1, count($container));
+        $this->assertCount(1, $container);
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertNotNull($transaction['options']['auth']);
@@ -116,13 +116,23 @@ class ClientTest extends BaseTest
         $response = $client->get('test/uri',['query' => ['foo' => 'bar']]);
         $this->assertTrue(is_array($response));
 
-        $this->assertEquals(1, count($container));
+        $this->assertCount(1, $container);
         $transaction = $container[0];
         $this->assertEquals('GET', $transaction['request']->getMethod());
         $this->assertNotNull($transaction['options']['auth']);
         $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+    }
 
+    public function test_delete_success()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(200)
+        ], $container);
+
+        $response = $client->delete('test/uri');
+        $this->assertEquals(200, $response);
     }
 
     public function test_deliver_user_delivery_class_to_send_fax()
