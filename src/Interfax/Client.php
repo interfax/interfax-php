@@ -146,7 +146,13 @@ class Client
      */
     public function post($uri, $params = [], $multipart = [])
     {
-        $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
+        if ($multipart && count($multipart)) {
+            $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
+        }
+        else {
+            $params = array_merge($params, ['auth' => [$this->username, $this->password], 'debug' => true]);
+        }
+        
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))

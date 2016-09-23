@@ -27,12 +27,13 @@ class Document extends Resource
     {
         $params = [
             'headers' => [
-                'Range' => 'bytes=' . $start . '-' . $end
+                'Range' => 'bytes=' . $start . '-' . $end,
+                'Content-Length' => strlen($data)
             ],
             'body' => $data
         ];
 
-        $this->client->post($this->resource_uri, $params, []);
+        $this->client->post($this->resource_uri, $params);
 
         return true;
     }

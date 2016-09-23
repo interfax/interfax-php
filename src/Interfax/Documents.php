@@ -37,7 +37,8 @@ class Documents
      * @param $document_name - name used when defining document on the API
      * @param $size - in bytes
      * @param array $params - additional parameters to be used when creating the document on the API
-     * @return object
+     * @return Document
+     * @throws \Interfax\Exception\RequestException
      */
     public function create($document_name, $size, $params = [])
     {

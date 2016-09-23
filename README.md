@@ -316,6 +316,67 @@ echo $fax->refresh()->status;
 // 32
 ```
 
+## Documents
+
+The ```Interfax\Document``` class allows for the uploading of larger files for faxing. The following is an example of how one should be created:
+
+```php
+$document = $client->documents->create('test.pdf', filesize('test.pdf'));
+$stream = fopen('test.pdf', 'rb');
+$current = 0;
+while (!feof($stream)) {
+    $chunk = fread($stream, 500);
+    $end = $current + strlen($chunk);
+    $doc->upload($current, $end-1, $chunk);
+    $current = $end;
+}
+fclose($stream);
+```
+
+### Create a Document
+
+```php
+$params = [...]; // see documentation for possible params
+$document = $client->documents->create($filename, filesize($filename), $params);
+// Interfax\Document
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2967)
+
+### Upload a chunk
+
+```php
+$document->upload($start, $end, $data);
+```
+
+Note no verification of data takes place - an exception wil be raised if values do not match appropriately.
+
+### Document Properties
+
+As per the [documentation](https://www.interfax.net/en/dev/rest/reference/2965) a Document has a number of properties which are accessible:
+
+```php
+$document->status;
+$document->fileName;
+$document->refresh()->attributes();
+```
+
+The most useful property is the document uri, which is a fixed property on the object:
+
+```php
+$document->location;
+// or as returned by the API:
+$document->uri;
+```
+
+### Cancel/Delete Document
+
+Can be done prior to completion or afterward
+
+```php
+$document->cancel();
+```
+
 ## Query parameters
 
 Where methods support a hash array structure of query parameters, these will be passed through to the API endpoint as provided. This ensures that any future parameters that might be added will be supported by the API as is.
