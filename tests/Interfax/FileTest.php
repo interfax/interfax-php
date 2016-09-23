@@ -40,7 +40,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function test_attribute_overrides()
     {
-        // although this would not be useful, the principle here is to allow both attributes to be set by
+        // this is not a real world use case, but the principle here is to allow both attributes to be set by
         // the method call to ensure erroneous details can be altered correctly
         $file = new File(__DIR__ . '/test.pdf', ['mime_type' => 'text/html', 'name' => 'foobar.html']);
         $header = $file->getHeader();

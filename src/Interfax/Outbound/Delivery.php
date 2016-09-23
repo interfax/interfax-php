@@ -70,6 +70,7 @@ class Delivery
      */
     protected function resolveFiles(&$params)
     {
+        // normalise to a single array of files
         $files = [];
         if (isset($params['file'])) {
             if (isset($params['files'])) {
@@ -81,15 +82,21 @@ class Delivery
             $files = $params['files'];
             unset($params['files']);
         } else {
-            throw new \InvalidArgumentException('must provide a file or files for Delivery');
+            throw new \InvalidArgumentException('Must provide a file or files for Delivery');
         }
 
+        // create file objects where necessary
         foreach ($files as $f) {
-            if (is_array($f)) {
-                if (count($f) === 2) {
-                    $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f[0], $f[1]]);
+            if (is_object($f)) {
+                if (get_class($f) === 'Interfax\File') {
+                    $this->files[] = $f;
+                } else {
+                    throw new \InvalidArgumentException('File objects must be Interfax\File objects for Delivery.');
                 }
+            } elseif (is_array($f)) {
+                $this->files[] = $this->factory->instantiateClass('Interfax\File', $f);
             } else {
+                // assumed to be a path
                 $this->files[] = $this->factory->instantiateClass('Interfax\File', [$f]);
             }
         }
