@@ -28,7 +28,7 @@ class Document extends Resource
         $params = [
             'headers' => [
                 'Range' => 'bytes=' . $start . '-' . $end,
-                'Content-Length' => strlen($data)
+                'Content-Length' => $end - $start + 1,
             ],
             'body' => $data
         ];
