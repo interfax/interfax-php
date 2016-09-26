@@ -233,4 +233,11 @@ class ClientTest extends BaseTest
         $this->assertEquals('http://test.foo.bar.com', $client->getBaseUri());
     }
 
+    public function test_prevents_trailing_slash()
+    {
+        $client = new Client(['base_uri' => 'http://test.foo.com/', 'username' => 'foo', 'password' => 'bar']);
+
+        $this->assertEquals('http://test.foo.com', $client->getBaseUri());
+    }
+
 }

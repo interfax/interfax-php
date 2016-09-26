@@ -42,7 +42,7 @@ class Client
 
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
-    protected static $DEFAULT_BASE_URI = 'https://rest.interfax.net/';
+    protected static $DEFAULT_BASE_URI = 'https://rest.interfax.net';
 
     public $username;
     public $password;
@@ -77,7 +77,8 @@ class Client
             $this->debug = $params['debug'];
         }
         if (array_key_exists('base_uri', $params)) {
-            $this->base_uri = $params['base_uri'];
+
+            $this->base_uri = rtrim($params['base_uri'], '/');
         }
         
         $this->username = $username;
