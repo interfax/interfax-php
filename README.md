@@ -10,6 +10,8 @@ Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/d
 
 ## Installation
 
+This library requires PHP 5.5 and above.
+
 _TODO:_ submit to packagist
 
 The preferred method of installation is via [Packagist](http://www.packagist.org) and [Composer](http://www.composer.org). Run the following command to install the package and add it as a requirement to your project's `composer.json`:
@@ -39,7 +41,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client) | [Account Info](#account-info) | [Outbound](#outbound) | [Inbound](#inbound) | [Outbound Fax](#outbound-fax) | [Inbound Fax](#inbound-fax) | [Large Files](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
+[Client](#client) | [Account Info](#account-info) | [Outbound](#outbound) | [Outbound Fax](#outbound-fax) | [Inbound](#inbound) | [Inbound Fax](#inbound-fax) | [Large Files](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
 
 ## Client
 
@@ -393,8 +395,6 @@ $document->cancel();
 Where methods support a hash array structure of query parameters, these will be passed through to the API endpoint as provided. This ensures that any future parameters that might be added will be supported by the API as is.
  
 The only values that are manipulated are booleans, which will be translated to the text 'TRUE' and 'FALSE' as appropriate.
-
-_TODO_ implement support for DateTime objects.
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2927)
 
