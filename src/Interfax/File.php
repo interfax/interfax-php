@@ -140,7 +140,7 @@ class File
         $this->headers = [
             'Content-Location' => $location
         ];
-        $this->body = '';
+        $this->body = null;
     }
 
     /**
