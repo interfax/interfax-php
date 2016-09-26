@@ -61,6 +61,10 @@ class Client
     /**
      * Client constructor.
      * @param array $params
+     *          'username' - string
+     *          'password' - string
+     *          'base_uri' - string override the API endpoint base (useful for testing)
+     *          'debug' - bool - put the Guzzle client into debug mode
      * @param GenericFactory|null $factory - allows for testing injection with abstract class instantiation
      * @throws \InvalidArgumentException
      */
