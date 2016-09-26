@@ -121,7 +121,7 @@ class Delivery
             $multipart[] = [
                 'name' => $file->getName(),
                 'contents' => $file->getBody(),
-                'headers' => $file->getHeader()
+                'headers' => $file->getHeader(),
             ];
         }
         return $multipart;
@@ -138,7 +138,16 @@ class Delivery
             'query' => $this->query_params,
         ];
 
-        $location = $this->client->post('/outbound/faxes', $params, $this->getMultipart());
+        if (count($this->files) > 1) {
+            $location = $this->client->post('/outbound/faxes', $params, $this->getMultipart());
+        }
+        else {
+            $params['headers'] = $this->files[0]->getHeader();
+            $params['body'] = $this->files[0]->getBody();
+            $location = $this->client->post('/outbound/faxes', $params);
+        }
+
+
         // TODO: clean this up
         $path = parse_url($location, PHP_URL_PATH);
         $bits = explode('/', $path);

@@ -155,11 +155,66 @@ class DeliveryTest extends BaseTest
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes', $transaction['request']->getUri()->getPath());
         $this->assertEquals('faxNumber=12345&bar=foo', $transaction['request']->getUri()->getQuery());
+        $this->assertEquals('app/foo', $transaction['request']->getHeaderLine('Content-Type'));
+        $body = $transaction['request']->getBody();
+        //$this->assertInstanceOf('GuzzleHttp\Psr7\MultipartStream', $body);
+        $contents = (string) $body;
+
+        $this->assertEquals(1, preg_match('/foo bar car/', $contents));
+    }
+
+    protected function getFakeFile($headers, $body)
+    {
+        // construct fake file to ensure it affects the request contents correctly
+        $file = $this->getMockBuilder('Interfax\File')
+            ->disableOriginalConstructor()
+            ->setMethods(['getHeader', 'getBody'])
+            ->getMock();
+
+        $file->expects($this->any())
+            ->method('getHeader')
+            ->will($this->returnValue($headers));
+
+        $file->expects($this->any())
+            ->method('getBody')
+            ->will($this->returnValue($body));
+        return $file;
+    }
+
+    public function test_it_supports_multiple_file_delivery()
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+        ], $container);
+
+        $file1 = $this->getFakeFile(['Content-Type' => 'app/foo'], 'foo bar car');
+        $file2 = $this->getFakeFile(['Content-Type' => 'app/bar'], 'test content');
+
+        // fake fax to be returned
+        $fax = $this->getMockBuilder('Interfax\Outbound\Fax')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $factory = $this->getFactory([
+            [$file1, [$client, 'fake/file1']],
+            [$file2, [$client, 'fake/file2']],
+            [$fax, [$client, 21]]
+        ]);
+
+        $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'files' => ['fake/file1', 'fake/file2']], $factory);
+
+        $this->assertEquals($fax, $delivery->send());
+        $transaction = $container[0];
+        $this->assertEquals('POST', $transaction['request']->getMethod());
+        $this->assertEquals('/outbound/faxes', $transaction['request']->getUri()->getPath());
+        $this->assertEquals('faxNumber=12345&bar=foo', $transaction['request']->getUri()->getQuery());
         $body = $transaction['request']->getBody();
         $this->assertInstanceOf('GuzzleHttp\Psr7\MultipartStream', $body);
         $contents = (string) $body;
-        $this->assertEquals(1, preg_match('/foo bar car/', $contents));
         $this->assertEquals(1, preg_match('/Content-Type: app\/foo/', $contents));
-
+        $this->assertEquals(1, preg_match('/foo bar car/', $contents));
+        $this->assertEquals(1, preg_match('/Content-Type: app\/bar/', $contents));
+        $this->assertEquals(1, preg_match('/test content/', $contents));
     }
 }
