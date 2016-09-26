@@ -20,6 +20,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
+    const VERSION = 'dev';
+
     /**
      * @var GenericFactory
      */
@@ -54,6 +56,7 @@ class Client
      * @var bool
      */
     private $debug = false;
+    private $base_uri;
 
     /**
      * Client constructor.
@@ -72,6 +75,9 @@ class Client
 
         if (array_key_exists('debug', $params)) {
             $this->debug = $params['debug'];
+        }
+        if (array_key_exists('base_uri', $params)) {
+            $this->base_uri = $params['base_uri'];
         }
         
         $this->username = $username;
@@ -119,7 +125,7 @@ class Client
     protected function getHttpClient()
     {
         if (!$this->http) {
-            $config = ['base_uri' => static::$DEFAULT_BASE_URI];
+            $config = ['base_uri' => $this->base_uri ?: static::$DEFAULT_BASE_URI];
             if ($this->debug) {
                 $config['debug'] = true;
             }
@@ -130,6 +136,16 @@ class Client
         }
 
         return $this->http;
+    }
+
+    protected function getBaseRequestParams()
+    {
+        return [
+            'auth' => [$this->username, $this->password],
+            'headers' => [
+                'User-Agent' => 'InterFAX PHP ' . static::VERSION
+            ]
+        ];
     }
 
     /**
@@ -160,11 +176,11 @@ class Client
     public function post($uri, $params = [], $multipart = [])
     {
         if ($multipart && count($multipart)) {
-            $params = array_merge($params, ['multipart' => $multipart, 'auth' => [$this->username, $this->password]]);
+            $params = array_merge_recursive($this->getBaseRequestParams(), $params, ['multipart' => $multipart]);
         } else {
-            $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
+            $params = array_merge_recursive($this->getBaseRequestParams(), $params);
         }
-
+        var_dump($params);
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))
@@ -184,7 +200,7 @@ class Client
      */
     public function get($uri, $params = [])
     {
-        $params = array_merge($params, ['auth' => [$this->username, $this->password]]);
+        $params = array_merge_recursive($this->getBaseRequestParams(), $params);
 
         try {
             $response = $this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params));
@@ -201,7 +217,7 @@ class Client
      */
     public function delete($uri)
     {
-        $params = ['auth' => [$this->username, $this->password]];
+        $params = $this->getBaseRequestParams();
         try {
             $response = $this->getHttpClient()->request('DELETE', $uri, $params);
             return $response->getStatusCode();
