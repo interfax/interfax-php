@@ -138,12 +138,23 @@ class Client
         return $this->http;
     }
 
+    /**
+     * @return string
+     */
+    public function getUserAgent()
+    {
+        return 'InterFAX PHP ' . static::VERSION;
+    }
+
+    /**
+     * @return array
+     */
     protected function getBaseRequestParams()
     {
         return [
             'auth' => [$this->username, $this->password],
             'headers' => [
-                'User-Agent' => 'InterFAX PHP ' . static::VERSION
+                'User-Agent' => $this->getUserAgent()
             ]
         ];
     }
@@ -152,16 +163,19 @@ class Client
      * @param array $params
      * @return array
      */
-    protected function parseQueryParams($params = [])
+    protected function getCompleteRequestParams($params = [])
     {
-        if (array_key_exists('query', $params)) {
-            foreach ($params['query'] as $k => $v) {
+        $complete = array_merge_recursive($this->getBaseRequestParams(), $params);
+
+        if (array_key_exists('query', $complete)) {
+            foreach ($complete['query'] as $k => $v) {
                 if (is_bool($v)) {
-                    $params['query'][$k] = $v ? 'TRUE' : 'FALSE';
+                    $complete['query'][$k] = $v ? 'TRUE' : 'FALSE';
                 }
             }
         }
-        return $params;
+        
+        return $complete;
     }
 
     /**
@@ -176,14 +190,14 @@ class Client
     public function post($uri, $params = [], $multipart = [])
     {
         if ($multipart && count($multipart)) {
-            $params = array_merge_recursive($this->getBaseRequestParams(), $params, ['multipart' => $multipart]);
+            $request_params = $this->getCompleteRequestParams(array_merge($params, ['multipart' => $multipart]));
         } else {
-            $params = array_merge_recursive($this->getBaseRequestParams(), $params);
+            $request_params = $this->getCompleteRequestParams($params);
         }
         
         try {
             return $this->parseResponse(
-                $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))
+                $this->getHttpClient()->request('POST', $uri, $request_params)
             );
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             throw RequestException::create('Problem with POST request', $e);
@@ -200,10 +214,10 @@ class Client
      */
     public function get($uri, $params = [])
     {
-        $params = array_merge_recursive($this->getBaseRequestParams(), $params);
+        $request_params = $this->getCompleteRequestParams($params);
 
         try {
-            $response = $this->getHttpClient()->request('GET', $uri, $this->parseQueryParams($params));
+            $response = $this->getHttpClient()->request('GET', $uri, $request_params);
             return $this->parseResponse($response);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             throw RequestException::create('Problem with GET request', $e);
@@ -217,7 +231,7 @@ class Client
      */
     public function delete($uri)
     {
-        $params = $this->getBaseRequestParams();
+        $params = $this->getCompleteRequestParams();
         try {
             $response = $this->getHttpClient()->request('DELETE', $uri, $params);
             return $response->getStatusCode();

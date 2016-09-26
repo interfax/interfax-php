@@ -94,6 +94,7 @@ class ClientTest extends BaseTest
         $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
         $this->assertEquals(1, preg_match('/testString/', $transaction['request']->getBody()));
+        $this->assertEquals(1, preg_match('/InterFAX PHP/', $transaction['request']->getHeaderLine('User-Agent')));
 
     }
 
@@ -122,6 +123,7 @@ class ClientTest extends BaseTest
         $this->assertNotNull($transaction['options']['auth']);
         $this->assertEquals('foo=bar', $transaction['request']->getUri()->getQuery());
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
+        $this->assertEquals(1, preg_match('/InterFAX PHP/', $transaction['request']->getHeaderLine('User-Agent')));
     }
 
     public function test_delete_success()
@@ -133,6 +135,10 @@ class ClientTest extends BaseTest
 
         $response = $client->delete('test/uri');
         $this->assertEquals(200, $response);
+        $transaction = $container[0];
+        $this->assertEquals('DELETE', $transaction['request']->getMethod());
+        $this->assertNotNull($transaction['options']['auth']);
+        $this->assertEquals(1, preg_match('/InterFAX PHP/', $transaction['request']->getHeaderLine('User-Agent')));
     }
 
     public function test_deliver_user_delivery_class_to_send_fax()
@@ -226,4 +232,5 @@ class ClientTest extends BaseTest
         $client = $this->getClientWithFactory([$guzzle]);
         $this->assertEquals('http://test.foo.bar.com', $client->getBaseUri());
     }
+
 }
