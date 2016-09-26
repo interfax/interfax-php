@@ -180,7 +180,7 @@ class Client
         } else {
             $params = array_merge_recursive($this->getBaseRequestParams(), $params);
         }
-        var_dump($params);
+        
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $this->parseQueryParams($params))
