@@ -2,8 +2,6 @@
 
 [![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)
 
-Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/dev) REST API.
-
 [Installation](#installation) | [Getting Started](#getting-started) | [Contributing](#contributing) | [Usage](#usage) | [License](#license)
 
 Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/dev) REST API.
