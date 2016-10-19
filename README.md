@@ -75,7 +75,7 @@ Each ```file``` entry can be:
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2918)
 
-## Account Info
+## Account
 
 ### Balance
 
