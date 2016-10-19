@@ -37,7 +37,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client) | [Account](#account) | [Outbound](#outbound) | [Outbound Fax](#outbound-fax) | [Inbound](#inbound) | [Inbound Fax](#inbound-fax) | [Documents](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
+[Client](#client) | [Account](#account) | [Outbound](#outbound) | [Inbound](#inbound) | [Documents](#documents) | [Helper Classes](#helper-classes) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
 
 ## Client
 
