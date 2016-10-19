@@ -1,6 +1,6 @@
 # InterFAX PHP Library
 
-[![Build Status](https://travis-ci.com/splatEric/interfax-php.svg?token=zvHvLCWt5Q8cuwRHBcBK&branch=master)](https://travis-ci.com/splatEric/interfax-php)
+[![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)
 
 Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/dev) REST API.
 
