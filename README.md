@@ -37,7 +37,7 @@ echo $fax->getStatus(false) === 0 ? 'SUCCESS' : 'FAILURE';
 
 # Usage
 
-[Client](#client) | [Account Info](#account-info) | [Outbound](#outbound) | [Outbound Fax](#outbound-fax) | [Inbound](#inbound) | [Inbound Fax](#inbound-fax) | [Large Files](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
+[Client](#client) | [Account](#account) | [Outbound](#outbound) | [Outbound Fax](#outbound-fax) | [Inbound](#inbound) | [Inbound Fax](#inbound-fax) | [Documents](#documents) | [Query Parameters](#query-parameters) | [Exceptions](#exceptions)
 
 ## Client
 
@@ -52,7 +52,6 @@ $client = new Interfax\Client(['username' => '...', 'password' => '...']);
 
 $client = new Interfax\Client();
 ```
-
 ### Send a Fax
 
 To send a fax, call the deliver method on the client with the appropriate array of parameters. 
@@ -87,22 +86,30 @@ echo $client->getBalance();
 // (string) 9.86
 ```
 
+**More:** [documentation](https://www.interfax.net/en/dev/rest/reference/3001)
+
 ## Outbound
 
-```Interfax\Client``` has an outbound property that should be accessed:
+[Get list](#get-outbound-fax-list) | [Get completed list](#get-completed-fax-list) | [Get record](#get-outbound-fax-record) | [Get image](#get-outbound-fax-image) | [Cancel fax](#cancel-an-outbound-fax) | [Search](#search-fax-list) | [Resend fax](#resend-a-fax)
+
+```Interfax\Client``` has an outbound property that can be accessed:
 
 ```php
 $outbound = $client->outbound;
 ```
 
-### Get recent outbound fax list
+### Get outbound fax list
 
 ```php
 $faxes = $client->outbound->recent();
 // Interfax\Outbound\Fax[]
 ```
 
-### Get completed outbound fax list
+**Options:** [`limit`, `lastId`, `sortOrder`, `userId`](https://www.interfax.net/en/dev/rest/reference/2920)
+
+----
+
+### Get completed fax list
 
 ```php
 $fax_ids = [ ... ]; // array of fax ids
@@ -110,29 +117,66 @@ $client->outbound->completed($fax_ids);
 // Interfax\Outbound\Fax[]
 ```
 
-### Get the Fax record
+### Get outbound fax record
+
+`$client->outbound->find(fax_id)`
+
+Retrieves information regarding a previously-submitted fax, including its current status.
 
 ```php
-$fax = $client->outbound->find('id');
+$fax = $client->outbound->find(123456);
 //Interfax\Outbound\Fax || null
 ```
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2921)
 
-### Search for Faxes
+### Get outbound fax image
+
+`$client->outbound->find(fax_id)->image()`
+
+The image is retrieved via a method on the outbound fax image object.
 
 ```php
-$faxes = $client->outbound->search([...]);
+$fax = $client->outbound->find(123456);
+if ($fax) {
+    $image = $fax->image();
+    $image->save('path/to/save/file/to.pdf');
+}
+```
+
+The fax image format is determined by the settings on the Interfax account being used, as detailed in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
+
+### Cancel an outbound fax
+
+`$client->outbound->find(fax_id)->cancel();`
+
+A fax is cancelled via a method on the `Interfax\Outbound\Fax` model.
+
+```php
+$fax = $client->outbound->find(123456);
+if ($fax) {
+    $fax->cancel();
+}
+```
+
+### Search fax list
+
+`$client->outbound->search($options)`
+
+Search for outbound faxes with a hash array of options keyed by the accepted search parameters for the outbound search API endpoint.
+
+```php
+$faxes = $client->outbound->search(['faxNumber' => '+1230002305555']);
 // Interfax\Outbound\Fax[]
 ```
 
-takes a single hash array, keyed by the accepted search parameters for the outbound search API endpoint
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2959)
+**Options:** [`ids`, `reference`, `dateFrom`, `dateTo`, `status`, `userId`, `faxNumber`, `limit`, `offset`](https://www.interfax.net/en/dev/rest/reference/2959)
 
 ### Resend a Fax
 
-The outbound resend will return a new outbound Fax representing the re-sent fax.
+`$client->outbound->resend($id[,$newNumber])`
+
+Resend the fax identified by the given id (optionally to a new fax number).
 
 ```php
 $fax = $client->outbound->resend($id);
@@ -141,69 +185,212 @@ $fax = $client->outbound->resend($id, $new_number);
 // Interfax\Outbound\Fax sent to the $new_number
 ```
 
+Returns a new `Interfax\Outbound\Fax` representing the newly created outbound fax.
 
-## Outbound Fax
+## Inbound
 
-The ```Interfax\Outbound\Fax``` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
+[Get list](#get-inbound-fax-list) | [Get record](#get-inbound-fax-record) | [Get image](#get-inbound-fax-image) | [Get emails](#get-forwarding-emails) | [Mark as read](#mark-as-readunread) | [Resend to email](#resend-inbound-fax)
+
+```Interfax\Client``` has an ```inbound``` property that supports the API endpoints for receiving faxes, as described in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2913)
+
+```php
+$inbound = $client->inbound;
+//Interfax\Inbound
+```
+
+### Get inbound fax list
+
+`$inbond->incoming($options = []);`
+
+Retrieves a user's list of inbound faxes.
+
+```php
+$faxes = $inbound->incoming();
+//\Interfax\Inbound\Fax[]
+$faxes = $inbound->incoming(['unreadOnly' => true ...]); // see docs for list of supported query params
+//\Interfax\Inbound\Fax[]
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2935)
+
+--- 
+
+### Get inbound fax record
+
+`$inbound->find($id);`
+
+Retrieves a single fax's metadata (receive time, sender number, etc.).
+
+```php
+$fax = $inbound->find(123456);
+//\Interfax\Inbound\Fax || null
+```
+
+null is returned if the resource is not found. Note that this could be because the user is not permissioned for the specific fax.
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2938)
+
+---
+
+### Get inbound fax image
+
+`$inbound->find($id)->image()`
+
+The image is retrieved via a method on the inbound fax object.
+
+```php
+$fax = $client->inbound->find(123456);
+if ($fax) {
+    $image = $fax->image();
+    $image->save('path/to/save/file/to.pdf');
+}
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
+
+---
+
+### Get forwarding emails
+
+`$inbound->find($id)->emails()`
+
+The forwarding email details are retrieved via a method on the inbound fax object.
+
+```php
+$fax = $client->inbound->find(123456);
+if ($fax) {
+    $emails = $fax->emails(); // array structure of forwarding emails.
+}
+```
+
+The returned array is a reflection of the values returned from the emails endpoint of the REST API:
+
+```php
+[
+    [
+       'emailAddress' => 'username@interfax.net',
+       'messageStatus' => 0,
+       'completionTime' => '2012-0623T17 => 24 => 11'
+    ],
+    //...
+];
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2930)
+
+---
+
+### Mark as read/unread
+
+`$inbound->find($id)->markRead();`
+`$inbound->find($id)->markUnread();`
+
+The inbound fax object provides methods to change the read status.
+
+```php
+$fax = $client->inbound->find(123456);
+if ($fax) {
+    $fax->markUnread(); // returns true
+    $fax->markRead(); //returns true
+}
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2936)
+
+---
+
+### Resend inbound fax
+
+`$inbound->find($id)->resend();`
+
+The resend method is on the inbound fax object.
+
+```php
+$fax = $client->inbound->find(123456);
+if ($fax) {
+    $fax->resend(); 
+}
+```
+
+---
+
+## Documents
+
+[Create](#create-document) | [Upload chunk](#upload-chunk) | [Properties](#document-properties) | [Cancel](#cancel-document)
+
+The ```Interfax\Document``` class allows for the uploading of larger files for faxing. The following is an example of how one should be created:
+
+```php
+$document = $client->documents->create('test.pdf', filesize('test.pdf'));
+$stream = fopen('test.pdf', 'rb');
+$current = 0;
+while (!feof($stream)) {
+    $chunk = fread($stream, 500);
+    $end = $current + strlen($chunk);
+    $doc->upload($current, $end-1, $chunk);
+    $current = $end;
+}
+fclose($stream);
+```
+
+### Create document
+
+```php
+$params = [...]; // see documentation for possible params
+$document = $client->documents->create($filename, filesize($filename), $params);
+// Interfax\Document
+```
+
+[Documentation](https://www.interfax.net/en/dev/rest/reference/2967)
+
+### Upload chunk
+
+```php
+$document->upload($start, $end, $data);
+```
+
+Note no verification of data takes place - an exception wil be raised if values do not match appropriately.
+
+### Document properties
+
+As per the [documentation](https://www.interfax.net/en/dev/rest/reference/2965) a Document has a number of properties which are accessible:
+
+```php
+$document->status;
+$document->fileName;
+$document->refresh()->attributes();
+```
+
+```php
+$document->location;
+// or as returned by the API:
+$document->uri;
+```
+
+### Cancel document
+
+`$document->cancel();`
+
+Can be done prior to completion or afterward
+
+## Helper Classes
+
+### Outbound Fax
+
+The `Interfax\Outbound\Fax` class wraps the details of any fax sent, and is returned by most of the ```Outbound``` methods.
 
 It offers several methods to manage or retrieve information about the fax.
 
-### Refreshing the Fax Details
-
 ```php
-// Interfax\Outbound\Fax
-$fax = $interfax->deliver(['faxNumber' => '+11111111112', 'file' => 'folder/file.pdf']);
-echo $fax->status;
-// -2
-echo $fax->refresh()->status;
-// 0
-```
-
-### Cancel
-
-```php
-$fax->cancel();
-//returns true on success
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2939)
-
-
-### Resend
-
-Resending a fax will create a new Fax object:
-
-```php
-$new_fax = $fax->resend('+1111111');
-// Interfax\Outbound\Fax
-$fax->id === $new_fax->id;
-// false
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2908)
-
-
-### Hide
-
-```php
+$fax->refresh(); // refreshes the data on the fax object
+$fax->cancel(); // cancel the fax, returns true on success
+$image = $fax->image(); // returns Interfax\Image
+$new_fax = $fax->resend('+1111111'); // returns a new Interfax\Outbound\Fax
 $fax->hide();
-//returns true on success
+$fax->attributes(); // hash array of fax data properties - see details below
 ```
 
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2940)
-
-### Fax Image
-
-```php
-$image = $fax->image();
-// Interfax\Image
-$image->save('path/to/save/file/to.pdf');
-// returns true on success
-```
-
-The fax image format is determined by the settings on the Interfax account being used, as detailed in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
-
-### Fax Properties
+### Outbound fax properties
 
 Properties on the Fax vary depending on which method call has been used to create the instance. Requesting a property that has not been received will raise a SPL ```\OutOfBoundsException```
 
@@ -227,163 +414,18 @@ $fax->attributes();
 
 Status should always be available. The values of the status codes are [Documented here](https://www.interfax.net/en/help/error_codes) 
 
-## Inbound
-
-```Interfax\Client``` has an ```inbound``` property that supports the API endpoints for receiving faxes, as described in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2913)
-
-```php
-$inbound = $client->inbound;
-//Interfax\Inbound
-```
-
-### Get a list of incoming faxes
-
-```php
-$faxes = $inbound->incoming(['unreadOnly' => true ...]); // see docs for list of supported query params
-//\Interfax\Inbound\Fax[]
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2935)
-
-### Get an individual fax record
-
-```php
-$fax = $inbound->find(123456);
-//\Interfax\Inbound\Fax || null
-```
-
-null is returned if the resource is found. Note that this could be because the user is not permissioned for the specific fax.
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2938)
-
-## Inbound Fax
+### Inbound Fax
 
 The incoming equivalent of the outbound fax class, the ```Interfax\Inbound\Fax``` class wraps the details of any incoming fax, and is returned by the ```Interfax\Inbound``` methods where appropriate.
 
-### Get the fax image
-
 ```php
-$image = $fax->image();
-$image->save('path/to/save/location/filename.tiff');
-// bool
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
-
-### Get forwarding emails
-
-```php
-$email_array = $fax->emails();
-```
-
-The array is a reflection of the values returned from the emails endpoint:
-
-```php
-[
-    [
-       'emailAddress' => 'username@interfax.net',
-       'messageStatus' => 0,
-       'completionTime' => '2012-0623T17 => 24 => 11'
-    ],
-    //...
-];
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2930)
-
-### Mark Read/Unread
-
-Mark the fax as read:
-
-```php
-$fax->markRead();
-// returns true or throws exception
-$fax->markUnread();
-// returns true or throws exception
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2936)
-
-### Resend the email
-
-```php
+$fax->refresh(); // reload properties of the inbound fax
+$fax->markRead(); // mark the fax read - returns true or throws exception
+$fax->markUnread(); // mark the fax unread - returns true or throws exception
 $fax->resend();
-```
-
-### Properties
-
-As with the outbound fax, the properties of the fax are available as a single hash array:
-
-```php
-$fax->attributes()
-// ['k' => 'v' ...]
-```
-The properties can be refreshed:
-
-```php
-echo $fax->refresh()->status;
-// 32
-```
-
-## Documents
-
-The ```Interfax\Document``` class allows for the uploading of larger files for faxing. The following is an example of how one should be created:
-
-```php
-$document = $client->documents->create('test.pdf', filesize('test.pdf'));
-$stream = fopen('test.pdf', 'rb');
-$current = 0;
-while (!feof($stream)) {
-    $chunk = fread($stream, 500);
-    $end = $current + strlen($chunk);
-    $doc->upload($current, $end-1, $chunk);
-    $current = $end;
-}
-fclose($stream);
-```
-
-### Create a Document
-
-```php
-$params = [...]; // see documentation for possible params
-$document = $client->documents->create($filename, filesize($filename), $params);
-// Interfax\Document
-```
-
-[Documentation](https://www.interfax.net/en/dev/rest/reference/2967)
-
-### Upload a chunk
-
-```php
-$document->upload($start, $end, $data);
-```
-
-Note no verification of data takes place - an exception wil be raised if values do not match appropriately.
-
-### Document Properties
-
-As per the [documentation](https://www.interfax.net/en/dev/rest/reference/2965) a Document has a number of properties which are accessible:
-
-```php
-$document->status;
-$document->fileName;
-$document->refresh()->attributes();
-```
-
-The most useful property is the document uri, which is a fixed property on the object:
-
-```php
-$document->location;
-// or as returned by the API:
-$document->uri;
-```
-
-### Cancel/Delete Document
-
-Can be done prior to completion or afterward
-
-```php
-$document->cancel();
+$image = $fax->image(); // Returns a Interfax\Image for this fax
+$email_array = $fax->emails(); // see below for details on the structure of this array
+$fax->attributes(); // hash array of properties
 ```
 
 ## Query parameters
