@@ -16,6 +16,8 @@ The preferred method of installation is via [Packagist](http://www.packagist.org
 composer require interfax/interfax
 ```
 
+If you are not using composer with your project currently, the (installation)[INSTALLATION.md] docs explain how to use it for a standalone installation of the library.
+
 ## Getting started
 
 To send a fax for a pdf file:
