@@ -55,6 +55,8 @@ Simply run the install command to download the dependencies
 php ./bin/composer.phar install --no-dev
 ```
 
+_The 'no-dev' option prevents the testing dependencies for the library from being installed to save space/bandwidth_
+
 ### Use the library
 
 inside acme-corp/index.php
