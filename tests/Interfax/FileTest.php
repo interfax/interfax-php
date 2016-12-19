@@ -80,4 +80,28 @@ class FileTest extends BaseTest
 
     }
 
+    public function test_initialise_with_invalid_stream()
+    {
+        $stream = fopen('fail.txt', 'w');
+        $this->setExpectedException('InvalidArgumentException');
+        new File($this->getClientWithFactory(), $stream);
+    }
+
+    public function test_initialise_with_readable_stream_and_missing_args()
+    {
+        $stream = fopen(__DIR__ . '/test.pdf', 'rb');
+        $this->setExpectedException('InvalidArgumentException');
+        new File($this->getClientWithFactory(), $stream);
+
+    }
+    public function test_initialise_with_readable_stream_and_valid_args()
+    {
+        $stream = fopen(__DIR__ . '/test.pdf', 'rb');
+
+        $file = new File($this->getClientWithFactory(), $stream, ['name' => 'test.pdf', 'mime_type' => 'application/pdf']);
+        $this->assertInstanceOf('Interfax\File', $file);
+        $header = $file->getHeader();
+        $this->assertArrayHasKey('Content-Type', $header);
+        $this->assertEquals('application/pdf', $header['Content-Type']);
+    }
 }
