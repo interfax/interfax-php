@@ -35,8 +35,7 @@ class FileTest extends BaseTest
         }
 
         $this->setExpectedException('InvalidArgumentException');
-
-        $file = new File($this->getClientWithFactory(), $missing_file_path);
+        new File($this->getClientWithFactory(), $missing_file_path);
     }
 
     public function test_it_sets_values_from_valid_file()
@@ -102,6 +101,7 @@ class FileTest extends BaseTest
         new File($this->getClientWithFactory(), $stream);
 
     }
+
     public function test_initialise_with_readable_stream_and_valid_args()
     {
         $stream = fopen(__DIR__ . '/test.pdf', 'rb');
@@ -111,5 +111,27 @@ class FileTest extends BaseTest
         $header = $file->getHeader();
         $this->assertArrayHasKey('Content-Type', $header);
         $this->assertEquals('application/pdf', $header['Content-Type']);
+        fclose($stream);
+    }
+
+    public function test_large_stream_converted_to_document()
+    {
+        $container = [];
+
+        $documents_client = $this->getClientWithResponses([
+            new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
+            new Response(202),
+            new Response(200)
+        ], $container);
+
+        $file_client = $this->getClientWithFactory([
+            new Documents($documents_client)
+        ]);
+
+        $stream = fopen(__DIR__ . '/test.pdf', 'rb');
+
+        $file = new File($file_client, $stream, ['size' => 9147, 'name' => 'test.pdf', 'mime_type' => 'application/pdf', 'chunk_size' => 5000]);
+        // no base uri on guzzle client
+        $this->assertEquals(['Content-Location' => '/outbound/documents/3425'], $file->getHeader());
     }
 }

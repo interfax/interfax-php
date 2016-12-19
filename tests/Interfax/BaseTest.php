@@ -34,6 +34,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Provides a mock generic factory for handling instantiation of objects within the code structure
+     *
      * @param array $returns
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
