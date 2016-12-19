@@ -17,6 +17,14 @@ use GuzzleHttp\Psr7\Response;
 
 class FileTest extends BaseTest
 {
+    public static function tearDownAfterClass()
+    {
+        if (file_exists(__DIR__ . '/fail.txt'))
+            unlink(__DIR__ . '/fail.txt');
+
+        parent::tearDownAfterClass();
+    }
+
     public function test_it_errors_for_invalid_path()
     {
         $i = 1;
@@ -82,7 +90,7 @@ class FileTest extends BaseTest
 
     public function test_initialise_with_invalid_stream()
     {
-        $stream = fopen('fail.txt', 'w');
+        $stream = fopen(__DIR__ . '/fail.txt', 'w');
         $this->setExpectedException('InvalidArgumentException');
         new File($this->getClientWithFactory(), $stream);
     }
