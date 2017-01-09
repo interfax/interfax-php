@@ -72,8 +72,22 @@ Each ```file``` entry can be:
 
 * local path - if the file is larger than the allowed limit, it will be automatically uploaded as an ```Interfax\Document```
 * uri (from an ```Interfax\Document```)
+* an array defining a streamed resource (see below)
 * ```Interfax\File``` 
 * ```Interfax\Document``` 
+
+#### Sending a stream
+
+Because of the high degree of flexibility that PHP stream resources offer, it's not practical to retrieve information automatically from a stream to send as a fax. As such, there are certain required parameters that must be provided:
+
+```php
+$stream = fopen('/tmp/fax.pdf', 'rb');
+$fax = $client->deliver([
+    'faxNumber' => '+442086090368',
+    'file' => [$stream, ['name' => 'fax.pdf', 'mime_type' => 'application/pdf']]
+```
+
+Note that it is assumed that the stream will not exceed the file size limitation for an inline file to be sent. However, if a size parameter is provided for the stream, and this exceeds the limit, it will be automatically uploaded as a ```Interfax\Document``` 
 
 [Documentation](https://www.interfax.net/en/dev/rest/reference/2918)
 

@@ -12,6 +12,8 @@
 
 namespace Interfax;
 
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
+
 class File
 {
     /**
@@ -27,6 +29,7 @@ class File
     protected $mime_type;
     protected $name;
     protected $body;
+    protected $size;
     private $chunk_size;
     protected static $DEFAULT_CHUNK_SIZE = 1048576; // 1024*1024
 
@@ -45,7 +48,11 @@ class File
 
         $this->factory = $factory;
 
-        if (preg_match('/^https?:\/\//', $location)) {
+        if (is_resource($location)) {
+            $this->initialiseParams($params);
+            $this->initialiseFromResource($location);
+        }
+        elseif (preg_match('/^https?:\/\//', $location)) {
             $this->initialiseFromUri($location);
         } else {
             $this->initialiseParams($params);
@@ -71,6 +78,10 @@ class File
         } else {
             $this->chunk_size = static::$DEFAULT_CHUNK_SIZE;
         }
+
+        if (array_key_exists('size', $params)) {
+            $this->size = $params['size'];
+        }
     }
 
     /**
@@ -82,6 +93,63 @@ class File
             'Content-Type' => $mime_type
         ];
         $this->mime_type = $mime_type;
+    }
+
+    protected function initialiseFromResource($resource)
+    {
+        $meta = stream_get_meta_data($resource);
+        if (strpos($meta['mode'], 'r') === false) {
+            throw new \InvalidArgumentException(
+                'Resource not opened with valid mode (r) for ' . __CLASS__
+            );
+        }
+        $missing = [];
+        foreach (['name', 'mime_type'] as $required) {
+            if (!$this->$required) {
+                $missing[] = $required;
+            }
+        }
+        if (count($missing)) {
+            throw new \InvalidArgumentException(
+                'Required parameters "' . implode(', ', $missing) . '" not set for resource initialisation of ' . __CLASS__
+            );
+        }
+
+        if ($this->size && $this->size > $this->chunk_size) {
+            $this->initialiseFromLargeResource($resource);
+        } else {
+            $this->body = $resource;
+        }
+    }
+
+    /**
+     * Simple abstraction to initialise a document for the given resource
+     *
+     * @param $resource
+     * @return Document
+     */
+    private function createDocumentFromResource($resource)
+    {
+        $document = $this->client->documents->create($this->name, $this->size);
+        $current = 0;
+        while (!feof($resource)) {
+            $chunk = fread($resource, $this->chunk_size);
+            $end = $current + strlen($chunk);
+            $document->upload($current, $end-1, $chunk);
+            $current = $end;
+        }
+        return $document;
+    }
+
+    /**
+     * Use the given resource to create a Document on the Interfax server for this file.
+     *
+     * @param $resource
+     */
+    protected function initialiseFromLargeResource($resource)
+    {
+        $document = $this->createDocumentFromResource($resource);
+        $this->initialiseFromUri($document->getHeaderLocation());
     }
 
     /**
@@ -99,8 +167,11 @@ class File
         if (!$this->name) {
             $this->name = basename($location);
         }
+        if (!$this->size) {
+            $this->size = filesize($location);
+        }
 
-        if (filesize($location) > $this->chunk_size) {
+        if ($this->size > $this->chunk_size) {
             $this->initialiseFromLargeFile($location);
         } else {
             if (!$this->mime_type) {
@@ -117,16 +188,8 @@ class File
      */
     protected function initialiseFromLargeFile($location)
     {
-        $document = $this->client->documents->create($this->name, filesize($location));
-
         $stream = fopen($location, 'rb');
-        $current = 0;
-        while (!feof($stream)) {
-            $chunk = fread($stream, $this->chunk_size);
-            $end = $current + strlen($chunk);
-            $document->upload($current, $end-1, $chunk);
-            $current = $end;
-        }
+        $document = $this->createDocumentFromResource($stream);
         fclose($stream);
 
         $this->initialiseFromUri($document->getHeaderLocation());

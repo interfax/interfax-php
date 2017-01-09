@@ -56,6 +56,19 @@ class DeliveryTest extends BaseTest
         $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'files' => ['/fake/file2']], $factory));
     }
 
+    public function test_it_can_be_constructed_with_a_stream()
+    {
+        $stream = fopen(__DIR__ . '/../test.pdf', 'rb');
+        $file = $this->getMockBuilder('Interfax\File')->disableOriginalConstructor()->getMock();
+        $params = ['name' => 'test.pdf', 'mime_type' => 'application/pdf'];
+
+        $factory = $this->getFactory([
+            [$file, [$this->client, $stream, $params]]
+        ]);
+
+        $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => [$stream, $params]], $factory));
+    }
+
     public function test_it_can_be_constructed_with_a_uri()
     {
         $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => 'https://test.com/foo/bar']));
@@ -163,6 +176,13 @@ class DeliveryTest extends BaseTest
         $this->assertEquals(1, preg_match('/foo bar car/', $contents));
     }
 
+    /**
+     * Helper function to generate a mock Interfax\File
+     *
+     * @param $headers
+     * @param $body
+     * @return \PHPUnit_Framework_MockObject_MockObject
+     */
     protected function getFakeFile($headers, $body)
     {
         // construct fake file to ensure it affects the request contents correctly
@@ -217,4 +237,5 @@ class DeliveryTest extends BaseTest
         $this->assertEquals(1, preg_match('/Content-Type: app\/bar/', $contents));
         $this->assertEquals(1, preg_match('/test content/', $contents));
     }
+
 }
