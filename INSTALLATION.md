@@ -13,7 +13,7 @@ composer require interfax/interfax
 ## Standalone installation
 
 Many projects may not use composer to manage their dependencies. In these circumstances, it's possible to include the library
-as a self contained dependency. Essentially this is creating a self
+as a self contained dependency. The following steps will allow you to do this.
 
 1. Clone the Interfax PHP repo into your project.
 1. Inside the Interfax PHP directory, download composer.
