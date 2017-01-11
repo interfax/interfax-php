@@ -10,13 +10,30 @@ Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/d
 
 This library requires PHP 5.5 and above.
 
+### Composer
+
 The preferred method of installation is via [Packagist](http://www.packagist.org) and [Composer](http://www.composer.org). Run the following command to install the package and add it as a requirement to your project's `composer.json`:
 
 ```bash
 composer require interfax/interfax
 ```
 
-If you are not using composer with your project currently, the [installation](INSTALLATION.md) docs explain how to use composer for a standalone installation.
+### Download the release
+
+You can download the package in its entirety (from 1.0.2 onward). The [Releases](https://github.com/interfax/interfax-php/releases) page lists all stable versions. Download any file
+with the name `interFAX-PHP-[RELEASE_NAME].zip` for a package including this library and its dependencies.
+
+Uncompress the zip file you download, and include the autoloader in your project:
+
+```php
+require_once '/path/to/interFAX-PHP-[RELEASE_NAME]/vendor/autoload.php';
+```
+
+You may wish to rename the release folder to not include the RELEASE_NAME, so that you can drop in future versions without changing the include.
+
+### Build it yourself
+
+The [installation](INSTALLATION.md) docs explain how to use composer to create a standalone installation.
 
 ## Getting started
 
