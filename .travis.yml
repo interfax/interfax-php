@@ -1,9 +1,20 @@
 language: php
-
 php:
-  - 5.5
-  - 5.6
-  - 7.0
-
+- 5.5
+- 5.6
+- 7.0
 install:
-  - composer install --no-interaction
+- composer install --no-interaction
+before_deploy:
+- php ./bin/build.php
+- export RELEASE_PKG_FILE=$(ls build/*zip)
+deploy:
+  provider: releases
+  api_key:
+    secure: lY4NVKjyzSrSq9OT2W/iZPHYAcyY/hB+WuECdkldKPiVYlt+T1IeSzoWUkd6av2cVmslCAYCcwAashXktWQ6lab0HOY8h+OdXENWYqj3dOVugYyi7ICcUjXYN1N6A9yNiYaLVC/NelRKmPlxmcJ4OVmcYifvTn4BbwHUqLcHvRkVJmo7bhVHDH+M6LsrGS8C5RqMlD3pKVzes2ZGsNbFEf5EqauYQKsYSOUgnlW+4eOYs0Rxero5vYE205cvvjB5EF20cHS1PHfuHmkR6Eia+CyQYK9uEJM3BZaKEd3QkZdFHuw/jG01VDDNgFRGyXc6ModaLMjL+8ajPjWQn0r7c9dknwzfDa8ckGgNR1W3SXkMfJ1CEzQWQyQIoIHnVzmdY2l5/rbDidTBTVjd32aZ/xxklEaY5P6EsB+piGmLI7wC+tseNXAxcXM0XUruov7SFiCiP/f/F8dgkjrmTGoZZLzZ7lAG6xX/erPdksEBgqw3wEQNfE+26tngBF+1hUIq1Hh6PiMmzv9P5dVrf/hSVLGzDz/5k+nB7L4z31GP8jqj53H6ZZZLrX2z7K7LNOvnybAtT/yQxXnq2D5By1dz5cnz9JhCadWEGMxRuWZhPgXOHvQDCb5BhSnf7RuTxNvbtL1pqfEaVGoHKAGo0mhMWbLeHIJL+u5Y+rGpJqWyDRY=
+  file: ${RELEASE_PKG_FILE}
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_PHP_VERSION = 7.0
+    repo: interfax/interfax-php
