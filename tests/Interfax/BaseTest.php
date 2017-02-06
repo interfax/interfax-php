@@ -10,12 +10,13 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
-namespace Interfax;
+namespace Test\Interfax;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use Interfax\Client;
 
 /**
  * Class BaseTest

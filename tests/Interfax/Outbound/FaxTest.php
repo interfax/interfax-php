@@ -11,10 +11,11 @@
  * @license MIT
  */
 
-namespace Interfax\Outbound;
+namespace Test\Interfax\Outbound;
 
 use GuzzleHttp\Psr7\Response;
-use Interfax\BaseTest;
+use Interfax\Outbound\Fax;
+use Test\Interfax\BaseTest;
 
 class FaxTest extends BaseTest
 {
@@ -46,7 +47,8 @@ class FaxTest extends BaseTest
         $fax = new Fax($client, 854759652);
 
         $this->assertNull($fax->status);
-        $this->assertEquals(0, $fax->refresh()->status);
+        $this->assertEquals($fax, $fax->refresh());
+        $this->assertEquals(0, $fax->status);
     }
 
     public function test_getter_method_for_record_details()
@@ -179,7 +181,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 21);
 
-        $this->assertTrue($fax->cancel());
+        $this->assertEquals($fax, $fax->cancel());
 
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
@@ -195,7 +197,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 21);
 
-        $this->assertTrue($fax->hide());
+        $this->assertEquals($fax, $fax->hide());
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/faxes/21/hide', $transaction['request']->getUri()->getPath());

@@ -10,9 +10,10 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
-namespace Interfax;
+namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
+use Interfax\Outbound;
 
 class OutboundTest extends BaseTest
 {

@@ -11,13 +11,14 @@
  * @license MIT
  */
 
-namespace Interfax;
+namespace Test\Interfax;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
+use Interfax\Client;
 
 class ClientTest extends BaseTest
 {

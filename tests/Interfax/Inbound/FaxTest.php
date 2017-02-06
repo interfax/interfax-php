@@ -10,9 +10,10 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
-namespace Interfax\Inbound;
+namespace Test\Interfax\Inbound;
 
-use Interfax\BaseTest;
+use Interfax\Inbound\Fax;
+use Test\Interfax\BaseTest;
 use GuzzleHttp\Psr7\Response;
 
 class FaxTest extends BaseTest
@@ -31,7 +32,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 854759652);
 
-        $this->assertTrue($fax->markRead());
+        $this->assertEquals($fax, $fax->markRead());
     }
 
     public function test_markUnread()
@@ -48,7 +49,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 854759652);
 
-        $this->assertTrue($fax->markUnread());
+        $this->assertEquals($fax, $fax->markUnread());
     }
 
     public function test_resend()
@@ -65,7 +66,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 854759652);
 
-        $this->assertTrue($fax->resend());
+        $this->assertEquals($fax, $fax->resend());
     }
 
     public function test_resend_with_email()
@@ -82,7 +83,7 @@ class FaxTest extends BaseTest
 
         $fax = new Fax($client, 854759652);
 
-        $this->assertTrue($fax->resend('foo@bar.com'));
+        $this->assertEquals($fax, $fax->resend('foo@bar.com'));
     }
 
     public function test_image()

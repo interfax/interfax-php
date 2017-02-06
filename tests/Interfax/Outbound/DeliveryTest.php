@@ -12,9 +12,10 @@
  */
 
 
-namespace Interfax\Outbound;
+namespace Test\Interfax\Outbound;
 
-use Interfax\BaseTest;
+use Interfax\Outbound\Delivery;
+use Test\Interfax\BaseTest;
 use Interfax\Client;
 use GuzzleHttp\Psr7\Response;
 use Interfax\File;

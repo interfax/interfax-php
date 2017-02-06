@@ -23,7 +23,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Interfax\\": "src/Interfax"
+            "Interfax\\": "src/Interfax",
+            "Test\\": "tests"
         }
     }
 }

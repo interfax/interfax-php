@@ -10,10 +10,12 @@
  * @license MIT
  */
 
-namespace Interfax;
+namespace Test\Interfax;
 
 
 use GuzzleHttp\Psr7\Response;
+use Interfax\Documents;
+use Interfax\File;
 
 class FileTest extends BaseTest
 {

@@ -16,9 +16,10 @@
  */
 
 
-namespace Interfax;
+namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
+use Interfax\Document;
 
 class DocumentTest extends BaseTest
 {
@@ -31,7 +32,7 @@ class DocumentTest extends BaseTest
 
         $document = new Document($client, 42, ['id' => 42]);
 
-        $this->assertEquals(true, $document->upload(0, 300, 'the quick brown fox'));
+        $this->assertEquals($document, $document->upload(0, 300, 'the quick brown fox'));
         $transaction = $container[0];
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/documents/42', $transaction['request']->getUri()->getPath());
@@ -91,7 +92,7 @@ class DocumentTest extends BaseTest
         ], $container);
 
         $document = new Document($client, '123124124', $struct);
-        $this->assertTrue($document->cancel());
+        $this->assertEquals($document, $document->cancel());
         $this->assertCount(0, $document->attributes());
         $transaction = $container[0];
         $this->assertEquals('DELETE', $transaction['request']->getMethod());

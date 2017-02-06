@@ -16,9 +16,10 @@
  */
 
 
-namespace Interfax;
+namespace Test\Interfax;
 
 
+use Interfax\Image;
 use org\bovigo\vfs\vfsStream;
 
 class ImageTest extends BaseTest
