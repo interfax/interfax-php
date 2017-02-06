@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+1.1.0
+=====
++ Fluent method signatures where appropriate on Fax and Document objects.
++ Distinct Test namespace to ensure individual test file running is supported.
+
 1.0.3
 =====
 + Documentation correction for the outbound fax status retrieval.

@@ -23,19 +23,18 @@ class Fax extends Resource
 
     /**
      * @param bool $unread
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     protected function mark($unread = true)
     {
         $this->client->post($this->resource_uri, ['query' => ['unread' => $unread]]);
 
-        // lack of exception indicates success
-        return true;
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     public function markRead()
@@ -44,7 +43,7 @@ class Fax extends Resource
     }
 
     /**
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     public function markUnread()
@@ -54,7 +53,7 @@ class Fax extends Resource
 
     /**
      * @param string $email
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     public function resend($email = null)
@@ -65,8 +64,7 @@ class Fax extends Resource
         }
         $this->client->post($this->resource_uri . '/resend', $params);
 
-        // lack of exception indicates success
-        return true;
+        return $this;
     }
 
     /**

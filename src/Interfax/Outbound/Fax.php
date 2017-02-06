@@ -52,25 +52,25 @@ class Fax extends Resource
     }
 
     /**
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     public function cancel()
     {
         $this->client->post($this->resource_uri . '/cancel');
 
-        return true;
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return self
      * @throws RequestException
      */
     public function hide()
     {
         $this->client->post($this->resource_uri . '/hide');
 
-        return true;
+        return $this;
     }
 
     /**

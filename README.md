@@ -379,7 +379,7 @@ $document = $client->documents->create($filename, filesize($filename), $params);
 ### Upload chunk
 
 ```php
-$document->upload($start, $end, $data);
+$document->upload($start, $end, $data); // returns the document object.
 ```
 
 Note no verification of data takes place - an exception wil be raised if values do not match appropriately.
@@ -402,7 +402,7 @@ $document->uri;
 
 ### Cancel document
 
-`$document->cancel();`
+`$document->cancel(); //returns the $document instance`
 
 Can be done prior to completion or afterward
 
@@ -415,11 +415,13 @@ The `Interfax\Outbound\Fax` class wraps the details of any fax sent, and is retu
 It offers several methods to manage or retrieve information about the fax.
 
 ```php
+// fluent methods that return the $fax instance
 $fax->refresh(); // refreshes the data on the fax object
 $fax->cancel(); // cancel the fax, returns true on success
+$fax->hide(); // hides the faxes from the fax lists
+
 $image = $fax->image(); // returns Interfax\Image
 $new_fax = $fax->resend('+1111111'); // returns a new Interfax\Outbound\Fax
-$fax->hide();
 $fax->attributes(); // hash array of fax data properties - see details below
 ```
 
@@ -452,10 +454,12 @@ Status should always be available. The values of the status codes are [Documente
 The incoming equivalent of the outbound fax class, the ```Interfax\Inbound\Fax``` class wraps the details of any incoming fax, and is returned by the ```Interfax\Inbound``` methods where appropriate.
 
 ```php
+// fluent methods that return the $fax instance for method chaining
 $fax->refresh(); // reload properties of the inbound fax
 $fax->markRead(); // mark the fax read - returns true or throws exception
 $fax->markUnread(); // mark the fax unread - returns true or throws exception
 $fax->resend();
+
 $image = $fax->image(); // Returns a Interfax\Image for this fax
 $email_array = $fax->emails(); // see below for details on the structure of this array
 $fax->attributes(); // hash array of properties

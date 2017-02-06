@@ -20,7 +20,7 @@ class Document extends Resource
      * @param $start
      * @param $end
      * @param $data
-     * @return bool
+     * @return self
      * @throws \Interfax\Exception\RequestException
      */
     public function upload($start, $end, $data)
@@ -35,17 +35,17 @@ class Document extends Resource
 
         $this->client->post($this->resource_uri, $params);
 
-        return true;
+        return $this;
     }
 
     /**
-     * @return bool
+     * @return self
      */
     public function cancel()
     {
         $this->client->delete($this->resource_uri);
         $this->record = [];
-        return true;
+        return $this;
     }
 
     public function getHeaderLocation()
