@@ -117,9 +117,10 @@ class Delivery
     public function getMultipart()
     {
         $multipart = [];
-        foreach ($this->files as $file) {
+        foreach ($this->files as $i => $file) {
             $multipart[] = [
-                'name' => $file->getName(),
+                'name' => 'file'.$i,
+                'filename' => urlencode($file->getName()),
                 'contents' => $file->getBody(),
                 'headers' => $file->getHeader(),
             ];
@@ -147,8 +148,7 @@ class Delivery
             $location = $this->client->post('/outbound/faxes', $params);
         }
 
-
-        // TODO: clean this up
+        // retrieve ID (last element of location path) for outbound fax object
         $path = parse_url($location, PHP_URL_PATH);
         $bits = explode('/', $path);
         return $this->factory->instantiateClass('Interfax\Outbound\Fax', [$this->client, array_pop($bits)]);
