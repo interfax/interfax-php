@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+1.1.1
+=====
++ Bugfix: urlencode filename attribute for multipart fax document upload.
+
 1.1.0
 =====
 + Fluent method signatures where appropriate on Fax and Document objects.
