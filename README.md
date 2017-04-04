@@ -501,6 +501,15 @@ try {
  3. **Commit** changes to your own branch
  4. **Push** your work back up to your fork
  5. Submit a **Pull request** so that we can review your changes
+ 
+### Running tests
+
+Ensure that composer is installed, then run the following commands.
+
+```sh
+composer install
+./vendor/bin/phpunit
+```
 
 ## License
 
