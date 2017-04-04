@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    const VERSION = '1.1.1';
+    const VERSION = '1.1.2';
 
     /**
      * @var GenericFactory
@@ -84,7 +84,7 @@ class Client
 
             $this->base_uri = rtrim($params['base_uri'], '/');
         }
-        
+
         $this->username = $username;
         $this->password = $password;
         if ($this->username === '' || $this->password === '') {
@@ -179,7 +179,7 @@ class Client
                 }
             }
         }
-        
+
         return $complete;
     }
 
@@ -199,7 +199,7 @@ class Client
         } else {
             $request_params = $this->getCompleteRequestParams($params);
         }
-        
+
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $request_params)
