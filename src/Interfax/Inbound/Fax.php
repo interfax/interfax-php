@@ -28,7 +28,7 @@ class Fax extends Resource
      */
     protected function mark($unread = true)
     {
-        $this->client->post($this->resource_uri, ['query' => ['unread' => $unread]]);
+        $this->client->post($this->resource_uri . '/mark', ['query' => ['unread' => $unread]]);
 
         return $this;
     }

@@ -27,7 +27,7 @@ class FaxTest extends BaseTest
 
         $client->expects($this->once())
             ->method('post')
-            ->with('/inbound/faxes/854759652', ['query' => ['unread' => false]])
+            ->with('/inbound/faxes/854759652/mark', ['query' => ['unread' => false]])
             ->will($this->returnValue(''));
 
         $fax = new Fax($client, 854759652);
@@ -44,7 +44,7 @@ class FaxTest extends BaseTest
 
         $client->expects($this->once())
             ->method('post')
-            ->with('/inbound/faxes/854759652', ['query' => ['unread' => true]])
+            ->with('/inbound/faxes/854759652/mark', ['query' => ['unread' => true]])
             ->will($this->returnValue(''));
 
         $fax = new Fax($client, 854759652);
