@@ -4,11 +4,11 @@
 
 [Installation](#installation) | [Getting Started](#getting-started) | [Contributing](#contributing) | [Usage](#usage) | [License](#license)
 
-Send and receive faxes in Ruby with the [InterFAX](https://www.interfax.net/en/dev) REST API.
+Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/dev) REST API.
 
 ## Installation
 
-This library requires PHP 5.5 and above.
+This library requires PHP 5.5 and above. You may use any of the following 3 approaches to add it to your project:
 
 ### Composer
 
@@ -33,7 +33,7 @@ You may wish to rename the release folder to not include the RELEASE_NAME, so th
 
 ### Build it yourself
 
-The [installation](INSTALLATION.md) docs explain how to use composer to create a standalone installation.
+The [installation](INSTALLATION.md) docs explain how to create a standalone installation.
 
 ## Getting started
 
