@@ -28,6 +28,8 @@ class FaxTest extends BaseTest
         $fax = new Fax($client, 854759652);
 
         $this->assertInstanceOf('Interfax\Outbound\Fax', $fax);
+        $this->assertNotNull($fax->id);
+        $this->assertEquals(854759652, $fax->id);
     }
 
     public function test_refresh()

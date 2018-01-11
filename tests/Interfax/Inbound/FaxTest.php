@@ -18,6 +18,19 @@ use GuzzleHttp\Psr7\Response;
 
 class FaxTest extends BaseTest
 {
+    public function test_successful_construction()
+    {
+        $client = $this->getMockBuilder('Interfax\Client')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $fax = new Fax($client, 854759652);
+
+        $this->assertInstanceOf('Interfax\Inbound\Fax', $fax);
+        $this->assertNotNull($fax->id);
+        $this->assertEquals(854759652, $fax->id);
+    }
+
     public function test_markRead()
     {
         $client = $this->getMockBuilder('Interfax\Client')

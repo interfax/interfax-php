@@ -65,6 +65,7 @@ abstract class Resource
         $this->client = $client;
 
         $this->resource_uri = static::$resource_uri_stem . $id;
+        $this->record['id'] = $id;
 
         foreach ($definition as $k => $v) {
             $this->record[$k] = $v;
