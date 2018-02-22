@@ -233,7 +233,7 @@ $inbound = $client->inbound;
 
 ### Get inbound fax list
 
-`$inbond->incoming($options = []);`
+`$inbound->incoming($options = []);`
 
 Retrieves a user's list of inbound faxes.
 
