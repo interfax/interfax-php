@@ -265,7 +265,7 @@ class ClientTest extends BaseTest
 
             $container = [];
             $client = $this->getClientWithResponses([
-                new Response($status_code, ['Content-type' => 'text/json'], 'foo')
+                new Response($status_code, ['Content-type' => 'text/json'], {'foo' => 'bar'})
             ], $container);
 
             $this->setExpectedException('Interfax\Exception\RequestException');
