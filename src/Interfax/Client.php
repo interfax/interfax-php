@@ -199,7 +199,7 @@ class Client
         } else {
             $request_params = $this->getCompleteRequestParams($params);
         }
-
+        
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $request_params)
@@ -254,7 +254,7 @@ class Client
      */
     protected function parseResponse(ResponseInterface $response)
     {
-        if (in_array($response->getStatusCode(), [200, 201, 202], true)) {
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             if ($location = $response->getHeaderLine('Location')) {
                 return $location;
             } elseif ($response->getHeaderLine('Content-Type') === 'text/json') {
