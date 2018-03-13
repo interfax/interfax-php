@@ -14,6 +14,7 @@
 namespace Interfax\Exception;
 
 use \GuzzleHttp\Exception\RequestException as GuzzleException;
+use \GuzzleHttp\Psr7\Response;
 
 /**
  * Class RequestException
@@ -77,13 +78,11 @@ class RequestException extends \RuntimeException
         return new self($message, $code, $http_status, $exception);
     }
 
-    public static function createForResponse($response, $code)
+    public static function createForResponse($message, Response $response, $code=null)
     {
         if (is_null($code)) {
-            $code = static::UNEXPECTED_RESPONSE_CODE;
+            $code = static::$UNEXPECTED_RESPONSE_CODE;
         }
-        
-        $message = 'Request Exception';
 
         if ($response->hasHeader('Content-Type') && $response->getHeaderLine('Content-Type') === 'text/json') {
             $json = json_decode((string)$response->getBody(), true);
@@ -99,7 +98,7 @@ class RequestException extends \RuntimeException
             $message .= ': ' . ($response->getBody() ?: 'no response information provided.');
         }
 
-        return new self($mesage, $code, $response->getStatusCode);
+        return new self($message, $code, $response->getStatusCode());
     }
 
     /**

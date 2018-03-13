@@ -254,6 +254,7 @@ class Client
      */
     protected function parseResponse(ResponseInterface $response)
     {
+        print "parsing response " . $response->getStatusCode();
         if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             if ($location = $response->getHeaderLine('Location')) {
                 return $location;
