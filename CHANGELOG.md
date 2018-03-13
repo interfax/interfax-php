@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+1.1.4
+=====
++ accept any 2xx status responses from interfax api
++ minor improvement to response exception generation
+
+1.1.3
+=====
++ Enhancement: Make fax id available when first created
+
+1.1.2
+=====
++ [BUG] Fix bug in marking inbound faxes as read/unread
+
 1.1.1
 =====
 + Bugfix: urlencode filename attribute for multipart fax document upload.
