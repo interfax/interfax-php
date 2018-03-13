@@ -242,9 +242,9 @@ class ClientTest extends BaseTest
     }
 
     /**
-     * Accept any 2xx status codes, throw an exception otherwise
+     * Accept any 2xx status codes
      */
-    public function test_response_status_parsing()
+    public function test_success_response_status_parsing()
     {
         for ($i = 0; $i < 10; $i++) {
             $container = [];
@@ -252,26 +252,38 @@ class ClientTest extends BaseTest
                 new Response(rand(200, 299), [], 'foo')
             ], $container);
 
-            $response = $client->get('test/uri',['query' => ['foo' => true, 'bar' => false]]);
+            $response = $client->get('test/uri', ['query' => ['foo' => true, 'bar' => false]]);
             
             $this->assertEquals('foo', $response);
         }
-        
+    }
+
+    public function errorCodeProvider()
+    {
+        $data = [];
         for ($i = 0; $i < 10; $i++) {
             $status_code = rand(100, 550);
             if ($status_code >= 200 && $status_code <=299) {
                 $status_code += 100;
             }
-
-            $container = [];
-            $client = $this->getClientWithResponses([
-                new Response($status_code, [], 'foo')
-            ], $container);
-
-            $this->setExpectedException('Interfax\Exception\RequestException', 'Unsuccessful request: foo');
-
-            $response = $client->get('test/uri',['query' => ['foo' => true, 'bar' => false]]);
+            $data[] = [$status_code];
         }
+        return $data;
+    }
+        
+    /**
+     * @dataProvider errorCodeProvider
+     */
+    public function test_error_response_status_parsing($status_code)
+    {
+        $container = [];
+        $client = $this->getClientWithResponses([
+            new Response($status_code, [], 'foo')
+        ], $container);
+
+        $this->setExpectedException('Interfax\Exception\RequestException', 'Unsuccessful request: foo');
+
+        $response = $client->get('test/uri', ['query' => ['foo' => true, 'bar' => false]]);
     }
 
 }

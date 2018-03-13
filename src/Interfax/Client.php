@@ -160,7 +160,8 @@ class Client
             'auth' => [$this->username, $this->password],
             'headers' => [
                 'User-Agent' => $this->getUserAgent()
-            ]
+            ],
+            'http_errors' => false
         ];
     }
 
