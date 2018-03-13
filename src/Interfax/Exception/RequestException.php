@@ -77,6 +77,31 @@ class RequestException extends \RuntimeException
         return new self($message, $code, $http_status, $exception);
     }
 
+    public static function createForResponse($response, $code)
+    {
+        if (is_null($code)) {
+            $code = static::UNEXPECTED_RESPONSE_CODE;
+        }
+        
+        $message = 'Request Exception';
+
+        if ($response->hasHeader('Content-Type') && $response->getHeaderLine('Content-Type') === 'text/json') {
+            $json = json_decode((string)$response->getBody(), true);
+            if ($json !== null) {
+                if (array_key_exists('code', $json)) {
+                    $code = $json['code'];
+                }
+                if (array_key_exists('message', $json)) {
+                    $message .= ': ' . $json['message'];
+                }
+            }
+        } else {
+            $message .= ': ' . ($response->getBody() ?: 'no response information provided.');
+        }
+
+        return new self($mesage, $code, $response->getStatusCode);
+    }
+
     /**
      * @return int
      */

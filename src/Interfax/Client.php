@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    const VERSION = '1.1.3';
+    const VERSION = '1.1.4';
 
     /**
      * @var GenericFactory
@@ -263,11 +263,7 @@ class Client
                 return $response->getBody();
             }
         } else {
-            throw new RequestException(
-                'Unexpected response code',
-                RequestException::$UNEXPECTED_RESPONSE_CODE,
-                $response->getStatusCode()
-            );
+            throw RequestException::createForResponse('Unsuccessful request', $response);
         }
     }
 
