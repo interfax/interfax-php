@@ -42,7 +42,7 @@ class Client
 
     protected static $ENV_USERNAME = 'INTERFAX_USERNAME';
     protected static $ENV_PASSWORD = 'INTERFAX_PASSWORD';
-    protected static $DEFAULT_BASE_URI = 'https://rest.interfax.net';
+    protected static $DEFAULT_BASE_URI = 'https://resttls.interfax.net';
 
     public $username;
     public $password;
