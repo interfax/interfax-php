@@ -15,6 +15,10 @@ install:
   # Force PHPUnit 7 #2693
 - php -v
 - phpunit --version
+before_script:
+ # Disable the HHVM JIT for faster Unit Testing
+- if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then echo 'hhvm.jit = 0' >> /etc/hhvm/php.ini; fi
+- if [[ $TRAVIS_PHP_VERSION != hhv* ]]; then test -z "$DISABLE_FUNCTIONS" || echo "disable_functions=$DISABLE_FUNCTIONS" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi  
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
