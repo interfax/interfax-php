@@ -6,9 +6,11 @@
         "guzzlehttp/guzzle": "^6.2|^7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0.0",
         "mikey179/vfsstream": "^1.6",
         "squizlabs/php_codesniffer": "^2.7"
+    },
+    "suggest": {
+        "phpunit/phpunit": "Allows automated tests to be run without system-wide install (only version 4-7 are supported)."
     },
     "license": "MIT",
     "authors": [
