@@ -9,15 +9,10 @@ install:
 - composer install --no-interaction
 - if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then wget -O ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar; fi
 - if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then chmod 755 ~/.phpenv/versions/hhvm/bin/phpunit; fi
-- if [[ $TRAVIS_PHP_VERSION > '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-7.phar; fi
-- if [[ $TRAVIS_PHP_VERSION > '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit; fi
   # Force PHPUnit 7 #2693
 - php -v
 - phpunit --version
-before_script:
- # Disable the HHVM JIT for faster Unit Testing
-- if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then echo 'hhvm.jit = 0' >> /etc/hhvm/php.ini; fi
-- if [[ $TRAVIS_PHP_VERSION != hhv* ]]; then test -z "$DISABLE_FUNCTIONS" || echo "disable_functions=$DISABLE_FUNCTIONS" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini; fi  
+
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
