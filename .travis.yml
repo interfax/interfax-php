@@ -7,7 +7,7 @@ php:
 - 7.3
 install:
 - composer install --no-interaction
-- if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then wget -O ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar; fi
+- if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then wget -O ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-4.8.phar; fi
 - if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then chmod 755 ~/.phpenv/versions/hhvm/bin/phpunit; fi
   # Force PHPUnit 7 #2693
 - php -v
