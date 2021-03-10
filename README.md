@@ -1,6 +1,6 @@
 # InterFAX PHP Library
 
-[![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)[![Build status](https://travis-ci.org/interfax/interfax-php.svg?branch=master)](https://travis-ci.org/interfax/interfax-php)
+[![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)[![Build status](https://travis-ci.org/ricky-shake-n-bake-bobby/interfax-php.svg?branch=master)](https://travis-ci.org/ricky-shake-n-bake-bobby/interfax-php)
 
 [Installation](#installation) | [Getting Started](#getting-started) | [Contributing](#contributing) | [Usage](#usage) | [License](#license)
 
