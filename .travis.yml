@@ -16,11 +16,11 @@ install:
 - php -v
 - phpunit --version
 - vendor/bin/phpunit --version
+- echo "$TRAVIS_TAG" "$TRAVIS_COMMIT" "$TRAVIS_BUILD_NUMBER"
 
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
-- echo "$TRAVIS_TAG" "$TRAVIS_COMMIT" "$TRAVIS_BUILD_NUMBER"
 - git tag "$TRAVIS_TAG"
 deploy:
   provider: releases
