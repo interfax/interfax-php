@@ -286,7 +286,7 @@
         },
         {
             "name": "mikey179/vfsStream",
-            "version": "v1.6.4",
+            "version": "v1.6.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mikey179/vfsStream.git",
