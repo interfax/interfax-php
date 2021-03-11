@@ -1,6 +1,6 @@
 # InterFAX PHP Library
 
-[![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)[![Build status](https://travis-ci.org/interfax/interfax-php.svg?branch=master)](https://travis-ci.org/interfax/interfax-php)
+[![PHP version](https://badge.fury.io/ph/interfax%2Finterfax.svg)](https://badge.fury.io/ph/interfax%2Finterfax)[![Build status](https://travis-ci.com/interfax/interfax-php.svg?branch=master)](https://travis-ci.com/interfax/interfax-php)
 
 [Installation](#installation) | [Getting Started](#getting-started) | [Contributing](#contributing) | [Usage](#usage) | [License](#license)
 
@@ -8,7 +8,7 @@ Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/de
 
 ## Installation
 
-This library requires PHP 5.5 and above. You may use any of the following 3 approaches to add it to your project:
+This library requires PHP 5.6 and above. You may use any of the following 3 approaches to add it to your project:
 
 ### Composer
 
