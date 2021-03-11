@@ -5,6 +5,8 @@ php:
 - 7.1
 - 7.2
 - 7.3
+- 7.4
+- 8.0
 install:
 - composer install --no-interaction
 - if [[ $TRAVIS_PHP_VERSION < '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.phar; fi
