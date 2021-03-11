@@ -19,8 +19,7 @@ install:
 - echo "$TRAVIS_TAG" 
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
-- git tag -a v1.1.5 -m "v1.1.5"
-
+- git push origin v1.1.5
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
