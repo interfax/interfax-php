@@ -9,12 +9,10 @@ install:
 - composer install --no-interaction
 - if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then wget -O ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-4.8.phar; fi
 - if [[ $TRAVIS_PHP_VERSION = hhv* ]]; then chmod 755 ~/.phpenv/versions/hhvm/bin/phpunit; fi
-- if [[ $TRAVIS_PHP_VERSION = '5.6' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-4.phar; fi
-- if [[ $TRAVIS_PHP_VERSION = '5.6' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
-- if [[ $TRAVIS_PHP_VERSION = '7.0' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.phar; fi
-- if [[ $TRAVIS_PHP_VERSION = '7.0' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit; fi
-- if [[ $TRAVIS_PHP_VERSION > '7.0' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-5.phar; fi
-- if [[ $TRAVIS_PHP_VERSION > '7.0' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
+- if [[ $TRAVIS_PHP_VERSION < '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.phar; fi
+- if [[ $TRAVIS_PHP_VERSION < '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit; fi
+- if [[ $TRAVIS_PHP_VERSION > '7.1' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-5.phar; fi
+- if [[ $TRAVIS_PHP_VERSION > '7.1' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
   # Force PHPUnit 7 #2693
 - php -v
 - phpunit --version
