@@ -6,7 +6,7 @@
         "guzzlehttp/guzzle": "^6.2|^7.0"
     },
     "require-dev": {
-        "mikey179/vfsstream": "^1.6",
+        "bovigo/vfsStream": "^1.6",
         "squizlabs/php_codesniffer": "^2.7"
     },
     "suggest": {
