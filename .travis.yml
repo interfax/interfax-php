@@ -14,7 +14,7 @@ install:
   # Force PHPUnit Upgrade for relevant PHP Versions
 - if [[ $TRAVIS_PHP_VERSION > '7.1' && $TRAVIS_PHP_VERSION < '7.4' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-5.phar; fi
 - if [[ $TRAVIS_PHP_VERSION > '7.1' && $TRAVIS_PHP_VERSION < '7.4' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
-- if [[ $TRAVIS_PHP_VERSION > '7.3' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-8.phar; fi
+- if [[ $TRAVIS_PHP_VERSION > '7.3' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O vendor/bin/phpunit https://phar.phpunit.de/phpunit-9.phar; fi
 - if [[ $TRAVIS_PHP_VERSION > '7.3' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
 
 - php -v
