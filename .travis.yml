@@ -20,7 +20,8 @@ install:
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
-- git tag $TRAVIS_TAG
+- echo $TRAVIS_TAG
+- git tag v1.1.5
 deploy:
   provider: releases
   api_key:
