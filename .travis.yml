@@ -19,7 +19,7 @@ install:
 - echo "$TRAVIS_TAG" 
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
-- git tag "$TRAVIS_TAG"
+- git tag v1.1.5
 
 before_deploy:
 - php ./bin/build.php
