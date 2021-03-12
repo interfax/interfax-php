@@ -16,7 +16,6 @@ install:
 - php -v
 - phpunit --version
 - vendor/bin/phpunit --version
-- TRAVIS_TAG=v1.1.5
 - echo "$TRAVIS_TAG" 
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
