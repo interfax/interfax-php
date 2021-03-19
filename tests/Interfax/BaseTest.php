@@ -91,4 +91,13 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
 
         return $client;
     }
+
+    public function setExpectedException($exception, $message = '', $code = null)
+    {
+        if (method_exists($this, 'expectException')) {
+            $this->expectException($exception);
+        }
+
+        parent::setExpectedException($exception);
+    }
 }
