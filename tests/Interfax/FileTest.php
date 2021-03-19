@@ -19,7 +19,7 @@ use Interfax\File;
 
 class FileTest extends BaseTest
 {
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         if (file_exists(__DIR__ . '/fail.txt'))
             unlink(__DIR__ . '/fail.txt');
@@ -53,15 +53,20 @@ class FileTest extends BaseTest
     {
         $container = [];
 
-        $documents_client = $this->getClientWithResponses([
-            new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
-            new Response(202),
-            new Response(200)
-        ], $container);
+        $documents_client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
+                new Response(202),
+                new Response(200)
+            ]
+        );
 
-        $file_client = $this->getClientWithFactory([
+        $file_client = $this->getClientWithFactory(
+            [
             new Documents($documents_client)
-        ]);
+            ]
+        );
 
         $file = new File($file_client, __DIR__ . '/test.pdf', ['chunk_size' => 5000]);
         // no base uri on guzzle client
@@ -120,11 +125,14 @@ class FileTest extends BaseTest
     {
         $container = [];
 
-        $documents_client = $this->getClientWithResponses([
-            new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
-            new Response(202),
-            new Response(200)
-        ], $container);
+        $documents_client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Location' => 'http://test.com/foo/3425'], ''),
+                new Response(202),
+                new Response(200)
+            ]
+        );
 
         $file_client = $this->getClientWithFactory([
             new Documents($documents_client)

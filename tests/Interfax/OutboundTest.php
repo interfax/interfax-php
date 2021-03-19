@@ -4,11 +4,11 @@
  *
  * (C) InterFAX, 2016
  *
- * @package interfax/interfax
- * @author Interfax <dev@interfax.net>
- * @author Mike Smith <mike.smith@camc-ltd.co.uk>
+ * @package   interfax/interfax
+ * @author    Interfax <dev@interfax.net>
+ * @author    Mike Smith <mike.smith@camc-ltd.co.uk>
  * @copyright Copyright (c) 2016, InterFAX
- * @license MIT
+ * @license   MIT
  */
 namespace Test\Interfax;
 
@@ -21,9 +21,12 @@ class OutboundTest extends BaseTest
     {
         $response = [['id' =>  12, 'senderCSID' => 'Interfax'],['id' => 14, 'senderCSID' => 'Interfax']];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $fax1 = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
         $fax2 = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
@@ -47,9 +50,12 @@ class OutboundTest extends BaseTest
     {
         $response = [['id' =>  21]];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $fax = $this->getMockBuilder('Interfax\Outbound\Fax')->disableOriginalConstructor()->getMock();
 
@@ -122,9 +128,12 @@ class OutboundTest extends BaseTest
             ['id' => 9, 'status' => 40],
         ];
 
-        $client = $this->getClientWithResponses([
-            new Response(200, ['Content-Type' => 'text/json'], json_encode($search_results))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Content-Type' => 'text/json'], json_encode($search_results))
+            ]
+        );
 
         $test_params = ['status' => 'Inprocess'];
 
@@ -146,9 +155,12 @@ class OutboundTest extends BaseTest
     {
         $response = ['id' =>  42, 'status' => 0, 'duration' => 4];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $fax = new Outbound\Fax($client, 42, $response);
         $factory = $this->getFactory(

@@ -4,11 +4,11 @@
  *
  * (C) InterFAX, 2016
  *
- * @package interfax/interfax
- * @author Interfax <dev@interfax.net>
- * @author Mike Smith <mike.smith@camc-ltd.co.uk>
+ * @package   interfax/interfax
+ * @author    Interfax <dev@interfax.net>
+ * @author    Mike Smith <mike.smith@camc-ltd.co.uk>
  * @copyright Copyright (c) 2016, InterFAX
- * @license MIT
+ * @license   MIT
  */
 namespace Test\Interfax;
 
@@ -22,9 +22,12 @@ class InboundTest extends BaseTest
     {
         $response = [['messageId' =>  12, 'phoneNumber' => '111'],['messageId' => 14, 'phoneNumber' => '2222']];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         // 2 inbound faxes will be crated for the 2 response structs
         $factory = $this->getFactory(
@@ -48,9 +51,12 @@ class InboundTest extends BaseTest
     {
         $response = ['messageId' =>  12, 'phoneNumber' => '111'];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $fax = new Inbound\Fax($client, 12);
         $factory = $this->getFactory(

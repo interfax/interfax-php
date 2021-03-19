@@ -4,11 +4,11 @@
  *
  * (C) InterFAX, 2016
  *
- * @package interfax/interfax
- * @author Interfax <dev@interfax.net>
- * @author Mike Smith <mike.smith@camc-ltd.co.uk>
+ * @package   interfax/interfax
+ * @author    Interfax <dev@interfax.net>
+ * @author    Mike Smith <mike.smith@camc-ltd.co.uk>
  * @copyright Copyright (c) 2016, InterFAX
- * @license MIT
+ * @license   MIT
  */
 
 
@@ -24,7 +24,7 @@ class DeliveryTest extends BaseTest
 {
     protected $client;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->client = new Client(['username' => 'test_user', 'password' => 'test_password']);
     }
@@ -48,10 +48,12 @@ class DeliveryTest extends BaseTest
     {
         $file = $this->getMockBuilder('Interfax\File')->disableOriginalConstructor()->getMock();
 
-        $factory = $this->getFactory([
+        $factory = $this->getFactory(
+            [
             [$file, [$this->client, '/fake/file']],
             [$file, [$this->client, '/fake/file2']]
-        ]);
+            ]
+        );
 
         $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'file' => '/fake/file'], $factory));
         $this->assertInstanceOf('Interfax\Outbound\Delivery', new Delivery($this->client, ['faxNumber' => '12345', 'files' => ['/fake/file2']], $factory));
@@ -111,7 +113,7 @@ class DeliveryTest extends BaseTest
     {
         $params = [];
         for ($i = 0; $i < 5; $i++) {
-            $params[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
+            $params[substr(md5(mt_rand()), 0, 7)] = substr(md5(mt_rand()), 0, 7);
         }
         $params['faxNumber'] = '12345';
         $params['file'] = __DIR__ . '/../test.pdf';
@@ -134,9 +136,12 @@ class DeliveryTest extends BaseTest
     public function test_it_uses_the_client_to_post_a_delivery_and_returns_fax()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         // construct fake file to ensure it affects the request contents correctly
         $file = $this->getMockBuilder('Interfax\File')
@@ -157,10 +162,12 @@ class DeliveryTest extends BaseTest
             ->disableOriginalConstructor()
             ->getMock();
 
-        $factory = $this->getFactory([
+        $factory = $this->getFactory(
+            [
             [$file, [$client, 'fake/file']],
             [$fax, [$client, 21]]
-        ]);
+            ]
+        );
 
         $delivery = new Delivery($client, ['faxNumber' => 12345, 'bar' => 'foo', 'file' => 'fake/file'], $factory);
 
@@ -180,8 +187,8 @@ class DeliveryTest extends BaseTest
     /**
      * Helper function to generate a mock Interfax\File
      *
-     * @param $headers
-     * @param $body
+     * @param  $headers
+     * @param  $body
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
     protected function getFakeFile($headers, $body)
@@ -205,9 +212,12 @@ class DeliveryTest extends BaseTest
     public function test_it_supports_multiple_file_delivery()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         $file1 = $this->getFakeFile(['Content-Type' => 'app/foo'], 'foo bar car');
         $file2 = $this->getFakeFile(['Content-Type' => 'app/bar'], 'test content');

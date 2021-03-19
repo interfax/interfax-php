@@ -4,11 +4,11 @@
  *
  * (C) InterFAX, 2016
  *
- * @package interfax/interfax
- * @author Interfax <dev@interfax.net>
- * @author Mike Smith <mike.smith@camc-ltd.co.uk>
+ * @package   interfax/interfax
+ * @author    Interfax <dev@interfax.net>
+ * @author    Mike Smith <mike.smith@camc-ltd.co.uk>
  * @copyright Copyright (c) 2016, InterFAX
- * @license MIT
+ * @license   MIT
  */
 namespace Test\Interfax\Inbound;
 
@@ -104,9 +104,12 @@ class FaxTest extends BaseTest
         $container = [];
         $resp_resource = fopen(__DIR__ . '/../test.pdf', 'r');
         $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
-        $client = $this->getClientWithResponses([
-            new Response(200, [], $stream),
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, [], $stream),
+            ]
+        );
 
         $result_image = $this->getMockBuilder('Interfax\Image')->disableOriginalConstructor()->getMock();
         $factory = $this->getFactory([
