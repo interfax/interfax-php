@@ -44,21 +44,21 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     protected function getFactory($returns = [])
     {
         $factory = $this->getMockBuilder('Interfax\GenericFactory')
-            ->setMethods(['instantiateClass'])
+            ->onlyMethods(['instantiateClass'])
             ->getMock();
-        foreach ($returns as $i => $obj) {
-            if (is_array($obj)) {
-                $factory->expects($this->at($i))
-                    ->method('instantiateClass')
-                    ->with($this->getExpectedClassForFactory($obj[0]), $obj[1])
-                    ->will($this->returnValue($obj[0]));
-            } else {
-                $factory->expects($this->at($i))
-                    ->method('instantiateClass')
-                    ->with($this->getExpectedClassForFactory($obj))
-                    ->will($this->returnValue($obj));
-            }
-        }
+
+        $consecutiveReturns = array_map(
+            function ($args) {
+                return is_array($args)
+                    ? $args[0]
+                    : $args;
+            },
+            $returns
+        );
+
+        $factory->method('instantiateClass')
+            ->will($this->onConsecutiveCalls(...$consecutiveReturns));
+
         return $factory;
     }
 

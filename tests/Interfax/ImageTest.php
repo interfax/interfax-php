@@ -24,12 +24,8 @@ class ImageTest extends BaseTest
     {
         $stream = $this->getMockBuilder('GuzzleHttp\Psr7\Stream')->disableOriginalConstructor()->getMock();
 
-        $stream->expects($this->at(0))
-            ->method('eof')
-            ->will($this->returnValue(false));
-        $stream->expects($this->at(2))
-            ->method('eof')
-            ->will($this->returnValue(true));
+        $stream->method('eof')
+            ->willReturnOnConsecutiveCalls(false, true);
         $stream->expects($this->once())
             ->method('read')
             ->will($this->returnValue('abc'));
@@ -40,5 +36,6 @@ class ImageTest extends BaseTest
         $this->assertFalse($directory->hasChild('save_test.txt'));
         $this->assertTrue($image->save(vfsStream::url('test_location/save_test.txt')));
         $this->assertTrue($directory->hasChild('save_test.txt'));
+        $this->assertEquals('abc', $directory->getChild('save_test.txt')->getContent());
     }
 }
