@@ -8,7 +8,12 @@ Send and receive faxes in PHP with the [InterFAX](https://www.interfax.net/en/de
 
 ## Installation
 
-This library requires PHP 5.6 and above. You may use any of the following 3 approaches to add it to your project:
+Two versions of this library exist, 1.x and 2.x. The 1.x version provides support for older versions of PHP, whilst the 2.x branch is designed to support the more recent releases of the language:
+
+| Package Version | Minimum PHP Version  | Maximum PHP Version |
+|-----------------|----------------------|---------------------|
+| 1.x             | 5.6                  | 7.4                 |
+| 2.x             | 7.3                  | 8.1                 |
 
 ### Composer
 
@@ -16,6 +21,17 @@ The preferred method of installation is via [Packagist](http://www.packagist.org
 
 ```bash
 composer require interfax/interfax
+```
+
+with 1.x version constraint
+```bash
+composer require interfax/interfax:"^1"
+```
+
+or with 2.x version constraint
+
+```bash
+composer require interfax/interfax:"^2"
 ```
 
 ### Download the release
