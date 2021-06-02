@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## Unreleased
 
 ### Changed
++ Conform to PSR12 coding standard
 + Composer dependency updates to match PHP version constraints for split branch versions of the library
 + README updates to reflect branch differences for library
 

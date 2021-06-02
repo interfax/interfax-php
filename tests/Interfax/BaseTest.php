@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Client as GuzzleClient;
@@ -27,7 +29,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     private function getExpectedClassForFactory($obj)
     {
         $cls = get_class($obj);
-        if (strpos($cls,'Mock') === 0) {
+        if (strpos($cls, 'Mock') === 0) {
             $r = new \ReflectionClass($obj);
             $cls = $r->getParentClass()->name;
         }
@@ -52,7 +54,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
                     ->with($this->getExpectedClassForFactory($obj[0]), $obj[1])
                     ->will($this->returnValue($obj[0]));
             } else {
-               $factory->expects($this->at($i))
+                $factory->expects($this->at($i))
                     ->method('instantiateClass')
                     ->with($this->getExpectedClassForFactory($obj))
                     ->will($this->returnValue($obj));
@@ -69,7 +71,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
         return new Client(['username' => 'test_user', 'password' => 'test_password'], $factory);
     }
 
-    protected function constructGuzzleWithResponses($responses = [], &$container)
+    protected function constructGuzzleWithResponses(&$container, $responses = [])
     {
         $mock = new MockHandler($responses);
 
@@ -85,10 +87,8 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     }
 
     // wrapper to allow "simple" inspection of the requests sent to the API endpoints
-    protected function getClientWithResponses($responses = [], &$container)
+    protected function getClientWithResponses(&$container, $responses = [])
     {
-        $client = $this->getClientWithFactory([$this->constructGuzzleWithResponses($responses, $container)]);
-
-        return $client;
+        return $this->getClientWithFactory([$this->constructGuzzleWithResponses($container, $responses)]);
     }
 }

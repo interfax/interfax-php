@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
@@ -22,16 +24,20 @@ class InboundTest extends BaseTest
     {
         $response = [['messageId' =>  12, 'phoneNumber' => '111'],['messageId' => 14, 'phoneNumber' => '2222']];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         // 2 inbound faxes will be crated for the 2 response structs
         $factory = $this->getFactory(
             [
                 [new Inbound\Fax($client, 12), [$client, 12, $response[0]]],
                 [new Inbound\Fax($client, 40), [$client, 14, $response[1]]]
-            ]);
+            ]
+        );
 
         $inbound = new Inbound($client, $factory);
 
@@ -48,15 +54,19 @@ class InboundTest extends BaseTest
     {
         $response = ['messageId' =>  12, 'phoneNumber' => '111'];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response('200', ['Content-type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response('200', ['Content-type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $fax = new Inbound\Fax($client, 12);
         $factory = $this->getFactory(
             [
                 [$fax, [$client, 12, $response]],
-            ]);
+            ]
+        );
 
         $inbound = new Inbound($client, $factory);
 
@@ -66,5 +76,4 @@ class InboundTest extends BaseTest
         $this->assertEquals('/inbound/faxes/12', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
-
 }

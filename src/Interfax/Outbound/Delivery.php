@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,12 +11,11 @@
  * @license MIT
  */
 
-
 namespace Interfax\Outbound;
 
 use Interfax\Client;
 use Interfax\Exception\RequestException;
-use \Interfax\File;
+use Interfax\File;
 use Interfax\GenericFactory;
 
 class Delivery
@@ -119,7 +119,7 @@ class Delivery
         $multipart = [];
         foreach ($this->files as $i => $file) {
             $multipart[] = [
-                'name' => 'file'.$i,
+                'name' => 'file' . $i,
                 'filename' => urlencode($file->getName()),
                 'contents' => $file->getBody(),
                 'headers' => $file->getHeader(),
@@ -141,8 +141,7 @@ class Delivery
 
         if (count($this->files) > 1) {
             $location = $this->client->post('/outbound/faxes', $params, $this->getMultipart());
-        }
-        else {
+        } else {
             $params['headers'] = $this->files[0]->getHeader();
             $params['body'] = $this->files[0]->getBody();
             $location = $this->client->post('/outbound/faxes', $params);

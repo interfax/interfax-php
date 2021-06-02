@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenEyes
  *
@@ -15,7 +16,6 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
@@ -26,9 +26,12 @@ class DocumentTest extends BaseTest
     public function test_upload()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(202, [], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(202, [], '')
+            ]
+        );
 
         $document = new Document($client, 42, ['id' => 42]);
 
@@ -37,7 +40,7 @@ class DocumentTest extends BaseTest
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/documents/42', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
-        $this->assertEquals('bytes=0-300',$transaction['request']->getHeaderLine('Range'));
+        $this->assertEquals('bytes=0-300', $transaction['request']->getHeaderLine('Range'));
     }
 
     public function test_refresh()
@@ -56,9 +59,12 @@ class DocumentTest extends BaseTest
         ];
 
         $container = [];
-        $client  = $this->getClientWithResponses([
-            new Response(200, ['Content-Type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client  = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Content-Type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $document = new Document($client, '89a48657279d45429c646029bd9227e6');
         $this->assertNull($document->status);
@@ -69,7 +75,7 @@ class DocumentTest extends BaseTest
         $this->assertEquals('GET', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/documents/89a48657279d45429c646029bd9227e6', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
-        $this->assertEquals($response,$document->attributes());
+        $this->assertEquals($response, $document->attributes());
     }
 
     public function test_cancel()
@@ -87,9 +93,12 @@ class DocumentTest extends BaseTest
             'sharing' => 'Private'
         ];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(200, [], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, [], '')
+            ]
+        );
 
         $document = new Document($client, '123124124', $struct);
         $this->assertEquals($document, $document->cancel());
@@ -99,5 +108,4 @@ class DocumentTest extends BaseTest
         $this->assertEquals('/outbound/documents/123124124', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
-
 }

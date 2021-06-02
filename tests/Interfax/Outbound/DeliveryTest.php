@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,7 +11,6 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
-
 
 namespace Test\Interfax\Outbound;
 
@@ -111,7 +111,7 @@ class DeliveryTest extends BaseTest
     {
         $params = [];
         for ($i = 0; $i < 5; $i++) {
-            $params[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
+            $params[substr(md5(mt_rand()), 0, 7)] = substr(md5(mt_rand()), 0, 7);
         }
         $params['faxNumber'] = '12345';
         $params['file'] = __DIR__ . '/../test.pdf';
@@ -134,9 +134,12 @@ class DeliveryTest extends BaseTest
     public function test_it_uses_the_client_to_post_a_delivery_and_returns_fax()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         // construct fake file to ensure it affects the request contents correctly
         $file = $this->getMockBuilder('Interfax\File')
@@ -205,9 +208,12 @@ class DeliveryTest extends BaseTest
     public function test_it_supports_multiple_file_delivery()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         $file1 = $this->getFakeFile(['Content-Type' => 'app/foo'], 'foo bar car');
         $file2 = $this->getFakeFile(['Content-Type' => 'app/bar'], 'test content');
@@ -238,5 +244,4 @@ class DeliveryTest extends BaseTest
         $this->assertEquals(1, preg_match('/Content-Type: app\/bar/', $contents));
         $this->assertEquals(1, preg_match('/test content/', $contents));
     }
-
 }

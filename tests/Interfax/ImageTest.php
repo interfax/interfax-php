@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OpenEyes
  *
@@ -15,9 +16,7 @@
  * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
 
-
 namespace Test\Interfax;
-
 
 use Interfax\Image;
 use org\bovigo\vfs\vfsStream;
@@ -43,7 +42,7 @@ class ImageTest extends BaseTest
 
         $directory = vfsStream::setup('test_location');
         $this->assertFalse($directory->hasChild('save_test.txt'));
-        $this->assertTrue( $image->save(vfsStream::url('test_location/save_test.txt')) );
+        $this->assertTrue($image->save(vfsStream::url('test_location/save_test.txt')));
         $this->assertTrue($directory->hasChild('save_test.txt'));
     }
 }

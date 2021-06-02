@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -62,7 +63,7 @@ class FaxTest extends BaseTest
 
         $response = [];
         for ($i = 0; $i < 5; $i++) {
-            $response[substr( md5(mt_rand()), 0, 7)] = substr( md5(mt_rand()), 0, 7);
+            $response[substr(md5(mt_rand()), 0, 7)] = substr(md5(mt_rand()), 0, 7);
         }
         $response['id'] = 82342453;
         $response['status'] = -2;
@@ -93,9 +94,12 @@ class FaxTest extends BaseTest
     {
         $container = [];
 
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         $resent_fax = $this->getMockBuilder('Interfax\Outbound\Fax')
             ->disableOriginalConstructor()
@@ -115,9 +119,12 @@ class FaxTest extends BaseTest
     {
         $container = [];
 
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://myfax.resource.uri/outbound/faxes/21'], '')
+            ]
+        );
 
         $resent_fax = $this->getMockBuilder('Interfax\Outbound\Fax')
             ->disableOriginalConstructor()
@@ -177,9 +184,12 @@ class FaxTest extends BaseTest
     public function test_cancel()
     {
         $container = [];
-         $client = $this->getClientWithResponses([
-            new Response(200, [], '')
-        ], $container);
+         $client = $this->getClientWithResponses(
+             $container,
+             [
+                new Response(200, [], '')
+             ]
+         );
 
         $fax = new Fax($client, 21);
 
@@ -193,9 +203,12 @@ class FaxTest extends BaseTest
     public function test_hide()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(200, [], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, [], '')
+            ]
+        );
 
         $fax = new Fax($client, 21);
 
@@ -208,11 +221,14 @@ class FaxTest extends BaseTest
     public function test_image()
     {
         $container = [];
-        $resp_resource = fopen(__DIR__ .'/../test.pdf', 'r');
+        $resp_resource = fopen(__DIR__ . '/../test.pdf', 'r');
         $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
-        $client = $this->getClientWithResponses([
-            new Response(200, [], $stream)
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, [], $stream)
+            ]
+        );
 
         $result_image = $this->getMockBuilder('Interfax\Image')->disableOriginalConstructor()->getMock();
         $factory = $this->getFactory([

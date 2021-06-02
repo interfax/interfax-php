@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
@@ -43,9 +45,12 @@ class DocumentsTest extends BaseTest
             ]
         ];
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(200, ['Content-Type' => 'text/json'], json_encode($response))
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Content-Type' => 'text/json'], json_encode($response))
+            ]
+        );
 
         $factory_returns = [
             $this->getMockBuilder('Interfax\Document')->disableOriginalConstructor()->getMock(), $this->getMockBuilder('Interfax\Document')->disableOriginalConstructor()->getMock()];
@@ -63,9 +68,12 @@ class DocumentsTest extends BaseTest
     public function test_available_with_params()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(200, ['Content-Type' => 'text/json'], '[]')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(200, ['Content-Type' => 'text/json'], '[]')
+            ]
+        );
 
         $documents = new Documents($client);
 
@@ -79,9 +87,12 @@ class DocumentsTest extends BaseTest
     public function test_create_no_params()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
+            ]
+        );
 
         $document = $this->getMockBuilder('Interfax\Document')
             ->disableOriginalConstructor()
@@ -101,9 +112,12 @@ class DocumentsTest extends BaseTest
     public function test_create_with_params()
     {
         $container = [];
-        $client = $this->getClientWithResponses([
-            new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
-        ], $container);
+        $client = $this->getClientWithResponses(
+            $container,
+            [
+                new Response(201, ['Location' => 'http://mydoc.resource.uri/outbound/documents/21'], '')
+            ]
+        );
 
         $document = $this->getMockBuilder('Interfax\Document')
             ->disableOriginalConstructor()

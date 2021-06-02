@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -13,7 +14,6 @@
 namespace Interfax\Outbound;
 
 use Interfax\Client;
-
 use Interfax\Exception\RequestException;
 use Interfax\Image;
 use Interfax\Resource;
