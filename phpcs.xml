@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<ruleset name="Interfax Coding Standards">
+
+    <description>PHPCS configuration file.</description>
+    <!-- check all files in the app directory, feel free to add more files with:
+    <file>FOLDER NAME</file>
+    -->
+    <file>src</file>
+    <file>tests</file>
+    <arg name="extensions" value="php" />
+
+    <!-- ignore warnings and display ERRORS only -->
+    <arg  value="np"/>
+
+    <!-- Our base rule: set to PSR12-->
+    <rule  ref="PSR12"/>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>*/*Test.php</exclude-pattern>
+    </rule>
+
+</ruleset>
