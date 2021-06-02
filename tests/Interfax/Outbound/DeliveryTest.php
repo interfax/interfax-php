@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,7 +11,6 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license   MIT
  */
-
 
 namespace Test\Interfax\Outbound;
 
@@ -248,5 +248,4 @@ class DeliveryTest extends BaseTest
         $this->assertEquals(1, preg_match('/Content-Type: app\/bar/', $contents));
         $this->assertEquals(1, preg_match('/test content/', $contents));
     }
-
 }

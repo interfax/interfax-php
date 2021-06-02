@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license   MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
@@ -138,7 +140,7 @@ class OutboundTest extends BaseTest
         $test_params = ['status' => 'Inprocess'];
 
         $factory = $this->getFactory([
-            [new Outbound\Fax($client,5),[$client, 5, $search_results[0]] ],
+            [new Outbound\Fax($client, 5),[$client, 5, $search_results[0]] ],
             [new Outbound\Fax($client, 9),[$client, 9, $search_results[1]] ]
         ]);
 
@@ -166,7 +168,8 @@ class OutboundTest extends BaseTest
         $factory = $this->getFactory(
             [
                 [$fax, [$client, 42, $response]],
-            ]);
+            ]
+        );
 
         $outbound = new Outbound($client, $factory);
 

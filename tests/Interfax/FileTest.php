@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -12,7 +13,6 @@
 
 namespace Test\Interfax;
 
-
 use GuzzleHttp\Psr7\Response;
 use Interfax\Documents;
 use Interfax\File;
@@ -21,8 +21,9 @@ class FileTest extends BaseTest
 {
     public static function tearDownAfterClass(): void
     {
-        if (file_exists(__DIR__ . '/fail.txt'))
+        if (file_exists(__DIR__ . '/fail.txt')) {
             unlink(__DIR__ . '/fail.txt');
+        }
 
         parent::tearDownAfterClass();
     }
@@ -62,16 +63,13 @@ class FileTest extends BaseTest
             ]
         );
 
-        $file_client = $this->getClientWithFactory(
-            [
+        $file_client = $this->getClientWithFactory([
             new Documents($documents_client)
-            ]
-        );
+        ]);
 
         $file = new File($file_client, __DIR__ . '/test.pdf', ['chunk_size' => 5000]);
         // no base uri on guzzle client
         $this->assertEquals(['Content-Location' => '/outbound/documents/3425'], $file->getHeader());
-
     }
 
     public function test_attribute_overrides()
@@ -91,7 +89,6 @@ class FileTest extends BaseTest
         $header = $file->getHeader();
         $this->assertArrayHasKey('Content-Location', $header);
         $this->assertEquals('https://foo.com/bar.pdf', $header['Content-Location']);
-
     }
 
     public function test_initialise_with_invalid_stream()
@@ -106,7 +103,6 @@ class FileTest extends BaseTest
         $stream = fopen(__DIR__ . '/test.pdf', 'rb');
         $this->setExpectedException('InvalidArgumentException');
         new File($this->getClientWithFactory(), $stream);
-
     }
 
     public function test_initialise_with_readable_stream_and_valid_args()

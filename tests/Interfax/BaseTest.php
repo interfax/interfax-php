@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Client as GuzzleClient;
@@ -88,9 +90,7 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     // wrapper to allow "simple" inspection of the requests sent to the API endpoints
     protected function getClientWithResponses(&$container, $responses = [])
     {
-        $client = $this->getClientWithFactory([$this->constructGuzzleWithResponses($container, $responses)]);
-
-        return $client;
+        return $this->getClientWithFactory([$this->constructGuzzleWithResponses($container, $responses)]);
     }
 
     public function setExpectedException($exception, $message = '', $code = null)

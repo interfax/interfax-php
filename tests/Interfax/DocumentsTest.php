@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;

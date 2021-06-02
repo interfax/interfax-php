@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -13,7 +14,7 @@
 
 namespace Interfax\Exception;
 
-use \GuzzleHttp\Exception\RequestException as GuzzleException;
+use GuzzleHttp\Exception\RequestException as GuzzleException;
 
 /**
  * Class RequestException

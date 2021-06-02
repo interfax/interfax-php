@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -51,8 +52,7 @@ class File
         if (is_resource($location)) {
             $this->initialiseParams($params);
             $this->initialiseFromResource($location);
-        }
-        elseif (preg_match('/^https?:\/\//', $location)) {
+        } elseif (preg_match('/^https?:\/\//', $location)) {
             $this->initialiseFromUri($location);
         } else {
             $this->initialiseParams($params);
@@ -135,7 +135,7 @@ class File
         while (!feof($resource)) {
             $chunk = fread($resource, $this->chunk_size);
             $end = $current + strlen($chunk);
-            $document->upload($current, $end-1, $chunk);
+            $document->upload($current, $end - 1, $chunk);
             $current = $end;
         }
         return $document;

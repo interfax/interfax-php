@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -35,7 +36,7 @@ class DocumentTest extends BaseTest
         $this->assertEquals('POST', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/documents/42', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
-        $this->assertEquals('bytes=0-300',$transaction['request']->getHeaderLine('Range'));
+        $this->assertEquals('bytes=0-300', $transaction['request']->getHeaderLine('Range'));
     }
 
     public function test_refresh()
@@ -70,7 +71,7 @@ class DocumentTest extends BaseTest
         $this->assertEquals('GET', $transaction['request']->getMethod());
         $this->assertEquals('/outbound/documents/89a48657279d45429c646029bd9227e6', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
-        $this->assertEquals($response,$document->attributes());
+        $this->assertEquals($response, $document->attributes());
     }
 
     public function test_cancel()
@@ -103,5 +104,4 @@ class DocumentTest extends BaseTest
         $this->assertEquals('/outbound/documents/123124124', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
-
 }

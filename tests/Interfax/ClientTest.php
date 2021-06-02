@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -96,7 +97,6 @@ class ClientTest extends BaseTest
         $this->assertEquals('test/uri', $transaction['request']->getUri()->getPath());
         $this->assertEquals(1, preg_match('/testString/', $transaction['request']->getBody()));
         $this->assertEquals(1, preg_match('/InterFAX PHP/', $transaction['request']->getHeaderLine('User-Agent')));
-
     }
 
     public function test_get_success()
@@ -115,7 +115,7 @@ class ClientTest extends BaseTest
 
         $client = $this->getClientWithFactory([$guzzle]);
 
-        $response = $client->get('test/uri',['query' => ['foo' => 'bar']]);
+        $response = $client->get('test/uri', ['query' => ['foo' => 'bar']]);
         $this->assertTrue(is_array($response));
 
         $this->assertCount(1, $container);
@@ -258,14 +258,14 @@ class ClientTest extends BaseTest
                 ]
             );
 
-            $response = $client->get('test/uri',['query' => ['foo' => true, 'bar' => false]]);
-            
+            $response = $client->get('test/uri', ['query' => ['foo' => true, 'bar' => false]]);
+
             $this->assertEquals('foo', $response);
         }
-        
+
         for ($i = 0; $i < 10; $i++) {
             $status_code = rand(100, 550);
-            if ($status_code >= 200 && $status_code <=299) {
+            if ($status_code >= 200 && $status_code <= 299) {
                 $status_code += 100;
             }
 
@@ -282,5 +282,4 @@ class ClientTest extends BaseTest
             $response = $client->get('test/uri', ['query' => ['foo' => true, 'bar' => false]]);
         }
     }
-
 }

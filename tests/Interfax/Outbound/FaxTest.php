@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -220,7 +221,7 @@ class FaxTest extends BaseTest
     public function test_image()
     {
         $container = [];
-        $resp_resource = fopen(__DIR__ .'/../test.pdf', 'r');
+        $resp_resource = fopen(__DIR__ . '/../test.pdf', 'r');
         $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
         $client = $this->getClientWithResponses(
             $container,

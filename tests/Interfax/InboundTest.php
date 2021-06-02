@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,6 +11,7 @@
  * @copyright Copyright (c) 2016, InterFAX
  * @license   MIT
  */
+
 namespace Test\Interfax;
 
 use GuzzleHttp\Psr7\Response;
@@ -34,7 +36,8 @@ class InboundTest extends BaseTest
             [
                 [new Inbound\Fax($client, 12), [$client, 12, $response[0]]],
                 [new Inbound\Fax($client, 40), [$client, 14, $response[1]]]
-            ]);
+            ]
+        );
 
         $inbound = new Inbound($client, $factory);
 
@@ -62,7 +65,8 @@ class InboundTest extends BaseTest
         $factory = $this->getFactory(
             [
                 [$fax, [$client, 12, $response]],
-            ]);
+            ]
+        );
 
         $inbound = new Inbound($client, $factory);
 
@@ -72,5 +76,4 @@ class InboundTest extends BaseTest
         $this->assertEquals('/inbound/faxes/12', $transaction['request']->getUri()->getPath());
         $this->assertEquals('', $transaction['request']->getUri()->getQuery());
     }
-
 }

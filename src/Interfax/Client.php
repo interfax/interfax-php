@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Interfax
  *
@@ -10,10 +11,9 @@
  * @license MIT
  */
 
-
 namespace Interfax;
 
-use \GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Client as GuzzleClient;
 use Interfax\Exception\RequestException;
 use Interfax\Outbound\Fax;
 use Psr\Http\Message\ResponseInterface;
@@ -81,7 +81,6 @@ class Client
             $this->debug = $params['debug'];
         }
         if (array_key_exists('base_uri', $params)) {
-
             $this->base_uri = rtrim($params['base_uri'], '/');
         }
 
@@ -90,7 +89,7 @@ class Client
         if ($this->username === '' || $this->password === '') {
             throw new \InvalidArgumentException(
                 'Username and Password must be provided or defined as environment variables '
-                . static::$ENV_USERNAME .' & ' . static::$ENV_PASSWORD
+                . static::$ENV_USERNAME . ' & ' . static::$ENV_PASSWORD
             );
         }
 
@@ -199,7 +198,7 @@ class Client
         } else {
             $request_params = $this->getCompleteRequestParams($params);
         }
-        
+
         try {
             return $this->parseResponse(
                 $this->getHttpClient()->request('POST', $uri, $request_params)
