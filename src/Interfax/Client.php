@@ -20,7 +20,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class Client
 {
-    const VERSION = '1.1.3';
+    const VERSION = '1.2.0';
 
     /**
      * @var GenericFactory

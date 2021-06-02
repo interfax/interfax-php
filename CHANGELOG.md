@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+
+### Changed
++ Composer dependency updates to match PHP version constraints for 1.x version of library
++ README updates to reflect branch differences for library
+
+### Fixed
++ Revert phpunit suggestion to dev dependency with correct version constraints
++ Restore missing CHANGELOG contents
+
+1.1.4
+=====
++ accept any 2xx status responses from interfax api
++ minor improvement to response exception generation
+
+1.1.3
+=====
++ Enhancement: Make fax id available when first created
+
+1.1.2
+=====
++ [BUG] Fix bug in marking inbound faxes as read/unread
+
+
 1.1.1
 =====
 + Bugfix: urlencode filename attribute for multipart fax document upload.
