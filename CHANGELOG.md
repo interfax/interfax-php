@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file. This projec
 ## Unreleased
 
 ### Changed
-+ Composer dependency updates to match PHP version constraints for 1.x version of library
++ Composer dependency updates to match PHP version constraints for split branch versions of the library
 + README updates to reflect branch differences for library
 
 ### Fixed
