@@ -19,13 +19,14 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Interfax\Client;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class BaseTest
  *
  * @package Interfax
  */
-abstract class BaseTest extends \PHPUnit_Framework_TestCase
+abstract class BaseTest extends TestCase
 {
     private function getExpectedClassForFactory($obj)
     {
@@ -91,15 +92,5 @@ abstract class BaseTest extends \PHPUnit_Framework_TestCase
     protected function getClientWithResponses(&$container, $responses = [])
     {
         return $this->getClientWithFactory([$this->constructGuzzleWithResponses($container, $responses)]);
-    }
-
-    public function setExpectedException($exception, $message = '', $code = null)
-    {
-        if (method_exists($this, 'expectException')) {
-            $this->expectException($exception);
-            return;
-        }
-
-        parent::setExpectedException($exception);
     }
 }

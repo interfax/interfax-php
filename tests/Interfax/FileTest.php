@@ -37,7 +37,7 @@ class FileTest extends BaseTest
             $missing_file_path = "/tmp/missing{$i}.txt";
         }
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         new File($this->getClientWithFactory(), $missing_file_path);
     }
 
@@ -94,14 +94,14 @@ class FileTest extends BaseTest
     public function test_initialise_with_invalid_stream()
     {
         $stream = fopen(__DIR__ . '/fail.txt', 'w');
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         new File($this->getClientWithFactory(), $stream);
     }
 
     public function test_initialise_with_readable_stream_and_missing_args()
     {
         $stream = fopen(__DIR__ . '/test.pdf', 'rb');
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         new File($this->getClientWithFactory(), $stream);
     }
 

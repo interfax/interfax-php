@@ -66,7 +66,7 @@ class ClientTest extends BaseTest
 
     public function test_construction_should_fail_without_credentials()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $client = new Client();
     }
 
@@ -277,7 +277,7 @@ class ClientTest extends BaseTest
                 ]
             );
 
-            $this->setExpectedException('Interfax\Exception\RequestException');
+            $this->expectException('Interfax\Exception\RequestException');
 
             $response = $client->get('test/uri', ['query' => ['foo' => true, 'bar' => false]]);
         }

@@ -31,7 +31,7 @@ class DeliveryTest extends BaseTest
 
     public function test_it_cant_be_constructed_without_params()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
 
         $delivery = new Delivery($this->client);
     }
@@ -39,7 +39,7 @@ class DeliveryTest extends BaseTest
     public function test_it_cant_be_constructed_without_a_file()
     {
 
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
 
         $delivery2 = new Delivery($this->client, ['faxNumber' => '12345']);
     }
