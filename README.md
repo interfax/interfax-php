@@ -491,7 +491,7 @@ The only values that are manipulated are booleans, which will be translated to t
 
 ## Exceptions
 
-Any method call that involves a call to the Interfax RESTful API may throw an instance of ```Interfax\Exception\RequestEception```. 
+Any method call that involves a call to the Interfax RESTful API may throw an instance of ```Interfax\Exception\RequestException```. 
  
 An exception is thrown for any requests that do not return a successful HTTP Status code. The goal of this Exception is to provide a convenience wrapper around information that may have been returned.
 
@@ -517,6 +517,12 @@ try {
  3. **Commit** changes to your own branch
  4. **Push** your work back up to your fork
  5. Submit a **Pull request** so that we can review your changes
+
+### Which version of the library?
+
+Functionality for the API in both versions of the library should be the same, and its therefore intended that the core code continues to be the same in both versions. The differences primarily exist to enable continuity of test coverage as PHP evolves (and phpunit evolves with it)
+
+As such, the core functionality should be developed in a way that will work with PHP 5.6 and up, and be consistent in both versions. Usage of newer language features in PHP will not be accepted in the core code.
  
 ### Running tests
 
