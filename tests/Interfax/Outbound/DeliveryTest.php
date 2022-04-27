@@ -15,6 +15,7 @@
 namespace Test\Interfax\Outbound;
 
 use Interfax\Outbound\Delivery;
+use PHPUnit\Framework\MockObject\MockObject;
 use Test\Interfax\BaseTest;
 use Interfax\Client;
 use GuzzleHttp\Psr7\Response;
@@ -189,14 +190,14 @@ class DeliveryTest extends BaseTest
      *
      * @param  $headers
      * @param  $body
-     * @return \PHPUnit_Framework_MockObject_MockObject
+     * @return MockObject
      */
-    protected function getFakeFile($headers, $body)
+    protected function getFakeFile($headers, $body, $name = 'fakeFaxFile')
     {
         // construct fake file to ensure it affects the request contents correctly
         $file = $this->getMockBuilder('Interfax\File')
             ->disableOriginalConstructor()
-            ->setMethods(['getHeader', 'getBody'])
+            ->onlyMethods(['getHeader', 'getBody', 'getName'])
             ->getMock();
 
         $file->expects($this->any())
@@ -206,6 +207,11 @@ class DeliveryTest extends BaseTest
         $file->expects($this->any())
             ->method('getBody')
             ->will($this->returnValue($body));
+
+        $file->expects($this->any())
+            ->method('getName')
+            ->will($this->returnValue($name));
+
         return $file;
     }
 
