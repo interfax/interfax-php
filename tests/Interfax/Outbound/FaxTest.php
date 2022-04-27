@@ -222,7 +222,9 @@ class FaxTest extends BaseTest
     {
         $container = [];
         $resp_resource = fopen(__DIR__ . '/../test.pdf', 'r');
-        $stream = \GuzzleHttp\Psr7\stream_for($resp_resource);
+        $stream = class_exists('\GuzzleHttp\Psr7\Utils')
+            ? \GuzzleHttp\Psr7\Utils::streamFor($resp_resource)
+            : \GuzzleHttp\Psr7\stream_for($resp_resource);
         $client = $this->getClientWithResponses(
             $container,
             [
