@@ -12,6 +12,7 @@ install:
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
 - git tag $TRAVIS_TAG $TRAVIS_COMMIT
+- more vendor/composer/autoload_psr4.php
 before_deploy:
 - php ./bin/build.php
 - export RELEASE_PKG_FILE=$(ls build/*zip)
