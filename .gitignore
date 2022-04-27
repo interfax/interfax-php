@@ -2,3 +2,5 @@
 /build/
 /vendor/
 .idea
+composer.lock
+
