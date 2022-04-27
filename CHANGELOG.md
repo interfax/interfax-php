@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 1.2.0
 
 ### Changed
 + Conform to PSR12 coding standard
@@ -12,6 +12,11 @@ All notable changes to this project will be documented in this file. This projec
 ### Fixed
 + Revert phpunit suggestion to dev dependency with correct version constraints
 + Restore missing CHANGELOG contents
+
+## 1.1.5
+
+### Fixed
++ Guzzle 7 support
 
 1.1.4
 =====
