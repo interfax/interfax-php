@@ -15,9 +15,7 @@ install:
 - if [[ $TRAVIS_PHP_VERSION > '7.1' && $TRAVIS_PHP_VERSION < '7.5' || $TRAVIS_PHP_VERSION = nightly ]]; then chmod 755 vendor/bin/phpunit; fi
 - php -v
 - phpunit --version
-- vendor/bin/phpunit --version
-#- TRAVIS_TAG=v1.1.5
-- echo "$TRAVIS_TAG" 
+- echo "$TRAVIS_TAG"
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
 - git tag $TRAVIS_TAG $TRAVIS_COMMIT
