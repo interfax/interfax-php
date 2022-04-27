@@ -19,7 +19,6 @@ use org\bovigo\vfs\vfsStream;
 
 class ImageTest extends BaseTest
 {
-
     public function test_save()
     {
         $stream = $this->getMockBuilder('GuzzleHttp\Psr7\Stream')->disableOriginalConstructor()->getMock();

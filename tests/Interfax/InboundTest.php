@@ -19,7 +19,6 @@ use Interfax\Inbound;
 
 class InboundTest extends BaseTest
 {
-
     public function test_incoming()
     {
         $response = [['messageId' =>  12, 'phoneNumber' => '111'],['messageId' => 14, 'phoneNumber' => '2222']];

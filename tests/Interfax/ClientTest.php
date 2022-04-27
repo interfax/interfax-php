@@ -23,7 +23,6 @@ use Interfax\Client;
 
 class ClientTest extends BaseTest
 {
-
     protected function getClient($properties = [])
     {
         $client = new Client(['username' => 'test_user', 'password' => 'test_password']);
