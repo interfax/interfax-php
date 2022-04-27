@@ -12,7 +12,7 @@ Two versions of this library exist, 1.x and 2.x. The 1.x version provides suppor
 
 | Package Version | Minimum PHP Version  | Maximum PHP Version |
 |-----------------|----------------------|---------------------|
-| 1.x             | 5.6                  | 7.4                 |
+| 1.x             | 5.6                  | 7.2                 |
 | 2.x             | 7.3                  | 8.1                 |
 
 ### Composer
