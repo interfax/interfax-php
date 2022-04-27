@@ -4,8 +4,6 @@ php:
 - 7.0
 - 7.1
 - 7.2
-- 7.3
-- 7.4
 install:
 - composer install --no-interaction
 - if [[ $TRAVIS_PHP_VERSION < '7.2' || $TRAVIS_PHP_VERSION = nightly ]]; then wget -O ~/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.phar; fi
@@ -16,8 +14,6 @@ install:
 - php -v
 - phpunit --version
 - vendor/bin/phpunit --version
-#- TRAVIS_TAG=v1.1.5
-- echo "$TRAVIS_TAG" 
 - echo "$TRAVIS_COMMIT"
 - echo "$TRAVIS_BUILD_NUMBER"
 - git tag $TRAVIS_TAG $TRAVIS_COMMIT
@@ -33,5 +29,5 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    condition: $TRAVIS_PHP_VERSION = 7.4
+    condition: $TRAVIS_PHP_VERSION = 7.2
     repo: interfax/interfax-php
