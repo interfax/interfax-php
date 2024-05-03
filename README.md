@@ -189,11 +189,9 @@ The image is retrieved via a method on the outbound fax image object.
 $fax = $client->outbound->find(123456);
 if ($fax) {
     $image = $fax->image();
-    $image->save('path/to/save/file/to.pdf');
+    $image->save('path/to/save/file/to.tif');
 }
 ```
-
-The fax image format is determined by the settings on the Interfax account being used, as detailed in the [Documentation](https://www.interfax.net/en/dev/rest/reference/2937)
 
 ### Cancel an outbound fax
 
